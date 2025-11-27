@@ -1,8 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PawPrint, Heart, Calendar, Plus } from 'lucide-react';
 import { StatusBadge, getPetEmoji } from '../components/Shared';
+import { useData } from '../context/DataContext';
 
-const MyPets = ({ pets, reminders, onSelectPet, onAddPetClick }) => {
+const MyPets = ({ onAddPetClick }) => {
+  const navigate = useNavigate();
+  const { pets, reminders } = useData();
+
   const getPetReminders = (petId) =>
     reminders
       .filter((reminder) => reminder.petId === petId && !reminder.completed)
@@ -54,7 +59,7 @@ const MyPets = ({ pets, reminders, onSelectPet, onAddPetClick }) => {
           return (
             <button
               key={pet.id}
-              onClick={() => onSelectPet(pet.id)}
+              onClick={() => navigate(`/pets/${pet.id}`)}
               className="text-left group bg-white border border-slate-100 rounded-3xl p-6 shadow-soft hover:shadow-xl transition-all duration-200 hover:-translate-y-1"
             >
               <div className="flex items-start gap-4">
@@ -126,4 +131,3 @@ const MyPets = ({ pets, reminders, onSelectPet, onAddPetClick }) => {
 };
 
 export default MyPets;
-

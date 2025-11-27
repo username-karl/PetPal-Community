@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { PawPrint, Lock, Mail, User, ArrowRight } from 'lucide-react';
 
-const Register = ({ onRegister, onNavigateToLogin }) => {
+const Register = ({ onRegister }) => {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -10,6 +12,7 @@ const Register = ({ onRegister, onNavigateToLogin }) => {
     e.preventDefault();
     if (name && email && password) {
       onRegister({ name, email });
+      navigate('/');
     }
   };
 
@@ -29,8 +32,8 @@ const Register = ({ onRegister, onNavigateToLogin }) => {
             <label className="text-sm font-bold text-slate-700 ml-1">Full Name</label>
             <div className="relative">
               <User className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white outline-none transition-all font-medium"
@@ -44,8 +47,8 @@ const Register = ({ onRegister, onNavigateToLogin }) => {
             <label className="text-sm font-bold text-slate-700 ml-1">Email Address</label>
             <div className="relative">
               <Mail className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-              <input 
-                type="email" 
+              <input
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white outline-none transition-all font-medium"
@@ -59,8 +62,8 @@ const Register = ({ onRegister, onNavigateToLogin }) => {
             <label className="text-sm font-bold text-slate-700 ml-1">Password</label>
             <div className="relative">
               <Lock className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-              <input 
-                type="password" 
+              <input
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white outline-none transition-all font-medium"
@@ -70,7 +73,7 @@ const Register = ({ onRegister, onNavigateToLogin }) => {
             </div>
           </div>
 
-          <button 
+          <button
             type="submit"
             className="w-full bg-brand-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-brand-500/30 hover:bg-brand-700 hover:shadow-brand-600/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-2 mt-4"
           >
@@ -81,9 +84,9 @@ const Register = ({ onRegister, onNavigateToLogin }) => {
         <div className="mt-8 text-center">
           <p className="text-slate-500 font-medium">
             Already have an account?{' '}
-            <button onClick={onNavigateToLogin} className="text-brand-600 font-bold hover:underline">
+            <Link to="/login" className="text-brand-600 font-bold hover:underline">
               Sign in
-            </button>
+            </Link>
           </p>
         </div>
       </div>

@@ -1,28 +1,27 @@
 
 import React from 'react';
-import { ViewState } from '../constants';
+import { NavLink, useLocation } from 'react-router-dom';
 import { LayoutDashboard, PawPrint, MessageCircle, ShieldCheck, Menu, X, Settings } from 'lucide-react';
 
-const Layout = ({ 
-  children, 
-  currentView, 
-  onChangeView, 
-  isModerator, 
-  userName, 
-  userRole, 
+const Layout = ({
+  children,
+  isModerator,
+  userName,
+  userRole,
   userAvatar,
   onLogout
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const location = useLocation();
 
   const navItems = [
-    { id: ViewState.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
-    { id: ViewState.MY_PETS, label: 'My Pets', icon: PawPrint },
-    { id: ViewState.COMMUNITY, label: 'Community', icon: MessageCircle },
+    { path: '/', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/pets', label: 'My Pets', icon: PawPrint },
+    { path: '/community', label: 'Community', icon: MessageCircle },
   ];
 
   if (isModerator) {
-    navItems.push({ id: ViewState.MODERATION, label: 'Moderation', icon: ShieldCheck });
+    navItems.push({ path: '/moderation', label: 'Moderation', icon: ShieldCheck });
   }
 
   return (
@@ -58,24 +57,23 @@ const Layout = ({
           <nav className="space-y-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = currentView === item.id;
+              const isActive = location.pathname === item.path ||
+                (item.path !== '/' && location.pathname.startsWith(item.path));
               return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    onChangeView(item.id);
-                    setIsMobileMenuOpen(false);
-                  }}
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className={`w-full flex items-center gap-3 px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-200
-                    ${isActive 
-                      ? 'bg-brand-50 text-brand-700 shadow-sm' 
+                    ${isActive
+                      ? 'bg-brand-50 text-brand-700 shadow-sm'
                       : 'text-slate-500 hover:bg-gray-50 hover:text-slate-900'
                     }
                   `}
                 >
                   <Icon className={`w-5 h-5 ${isActive ? 'text-brand-600' : 'text-slate-400'}`} />
                   {item.label}
-                </button>
+                </NavLink>
               );
             })}
           </nav>
@@ -83,12 +81,10 @@ const Layout = ({
 
         {/* User Profile Section */}
         <div className="p-4 border-t border-gray-100 bg-gray-50/50 space-y-3">
-          <button 
-            onClick={() => {
-              onChangeView(ViewState.PROFILE);
-              setIsMobileMenuOpen(false);
-            }}
-            className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all hover:bg-white hover:shadow-sm group ${currentView === ViewState.PROFILE ? 'bg-white shadow-sm ring-1 ring-gray-200' : ''}`}
+          <NavLink
+            to="/profile"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={({ isActive }) => `w-full flex items-center gap-3 p-3 rounded-xl transition-all hover:bg-white hover:shadow-sm group ${isActive ? 'bg-white shadow-sm ring-1 ring-gray-200' : ''}`}
           >
             <div className="relative">
               <img src={userAvatar} alt="User" className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
@@ -99,7 +95,7 @@ const Layout = ({
               <p className="text-xs text-slate-500 truncate">{userRole}</p>
             </div>
             <Settings className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
-          </button>
+          </NavLink>
 
           {onLogout && (
             <button
@@ -124,7 +120,7 @@ const Layout = ({
 
       {/* Overlay for mobile */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-10 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />

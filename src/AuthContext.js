@@ -1,10 +1,23 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { api } from './api';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  // Initialize user from localStorage if available
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('petpal_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  // Persist user to localStorage whenever it changes
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('petpal_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('petpal_user');
+    }
+  }, [user]);
 
   const login = async (email) => {
     const userData = await api.login(email);

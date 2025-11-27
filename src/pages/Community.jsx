@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Search, Filter, Camera, Send, Trash2, Heart, MessageSquare, X, Sparkles, User as UserIcon } from 'lucide-react';
+import { useData } from '../context/DataContext';
 
-const Community = ({ user, posts, onCreatePost, onDeletePost, onDeleteComment, onToggleRole }) => {
+const Community = ({ user, onToggleRole }) => {
+  const { posts, createPost, deletePost, deleteComment } = useData();
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
   const [newPostCategory, setNewPostCategory] = useState('Advice');
@@ -10,10 +12,11 @@ const Community = ({ user, posts, onCreatePost, onDeletePost, onDeleteComment, o
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsPosting(true);
-    await onCreatePost({
-        title: newPostTitle,
-        content: newPostContent,
-        category: newPostCategory
+    await createPost({
+      title: newPostTitle,
+      content: newPostContent,
+      category: newPostCategory,
+      author: user.name
     });
     setNewPostTitle('');
     setNewPostContent('');
@@ -38,12 +41,12 @@ const Community = ({ user, posts, onCreatePost, onDeletePost, onDeleteComment, o
         {/* Create Post Box */}
         <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-soft">
           <div className="flex items-center gap-3 mb-4">
-             <div className="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center text-brand-700 font-bold">
-                {user.name.charAt(0)}
-             </div>
-             <h3 className="font-bold text-slate-800">Start a discussion</h3>
+            <div className="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center text-brand-700 font-bold">
+              {user.name.charAt(0)}
+            </div>
+            <h3 className="font-bold text-slate-800">Start a discussion</h3>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="text"
@@ -53,7 +56,7 @@ const Community = ({ user, posts, onCreatePost, onDeletePost, onDeleteComment, o
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none font-bold text-slate-800 placeholder-slate-400 transition-all"
               required
             />
-            <textarea 
+            <textarea
               placeholder="Share your tips, questions, or stories..."
               value={newPostContent}
               onChange={(e) => setNewPostContent(e.target.value)}
@@ -65,7 +68,7 @@ const Community = ({ user, posts, onCreatePost, onDeletePost, onDeleteComment, o
                 <button type="button" className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition">
                   <Camera className="w-5 h-5" />
                 </button>
-                <select 
+                <select
                   value={newPostCategory}
                   onChange={(e) => setNewPostCategory(e.target.value)}
                   className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-bold text-slate-700 focus:outline-none cursor-pointer transition"
@@ -76,8 +79,8 @@ const Community = ({ user, posts, onCreatePost, onDeletePost, onDeleteComment, o
                   <option value="Adoption">Adoption</option>
                 </select>
               </div>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={isPosting}
                 className="bg-brand-600 text-white px-8 py-2.5 rounded-xl font-bold hover:bg-brand-700 transition disabled:opacity-50 shadow-lg shadow-brand-500/20 flex items-center gap-2"
               >
@@ -93,29 +96,29 @@ const Community = ({ user, posts, onCreatePost, onDeletePost, onDeleteComment, o
           {posts.map(post => (
             <div key={post.id} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-soft hover:shadow-lg transition duration-300">
               <div className="flex justify-between items-start mb-4">
-                 <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center text-slate-600 font-bold text-lg shadow-inner border border-white">
-                     {post.author.charAt(0)}
-                   </div>
-                   <div>
-                     <p className="font-bold text-slate-900 text-base">{post.author}</p>
-                     <p className="text-xs text-slate-500 font-medium mt-0.5">{new Date(post.timestamp).toLocaleDateString()} • <span className="text-brand-600">{post.category}</span></p>
-                   </div>
-                 </div>
-                 {user.role === 'Moderator' && (
-                   <button 
-                    onClick={() => onDeletePost(post.id)}
-                    className="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-2 rounded-lg transition" 
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center text-slate-600 font-bold text-lg shadow-inner border border-white">
+                    {post.author.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900 text-base">{post.author}</p>
+                    <p className="text-xs text-slate-500 font-medium mt-0.5">{new Date(post.timestamp).toLocaleDateString()} • <span className="text-brand-600">{post.category}</span></p>
+                  </div>
+                </div>
+                {user.role === 'Moderator' && (
+                  <button
+                    onClick={() => deletePost(post.id)}
+                    className="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-2 rounded-lg transition"
                     title="Moderator Delete"
-                   >
-                     <Trash2 className="w-5 h-5" />
-                   </button>
-                 )}
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                )}
               </div>
-              
+
               <h3 className="text-xl font-bold text-slate-900 mb-3">{post.title}</h3>
               <p className="text-slate-600 leading-relaxed mb-6 text-base">{post.content}</p>
-              
+
               <div className="flex items-center gap-6 pt-6 border-t border-slate-50 text-slate-500">
                 <button className="flex items-center gap-2 hover:text-rose-500 transition group">
                   <div className="p-2 bg-slate-50 rounded-full group-hover:bg-rose-50 transition">
@@ -138,7 +141,7 @@ const Community = ({ user, posts, onCreatePost, onDeletePost, onDeleteComment, o
                     <div key={comment.id} className="flex justify-between items-start group">
                       <div className="flex gap-3">
                         <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-xs font-bold text-slate-500 border border-slate-200">
-                           {comment.author.charAt(0)}
+                          {comment.author.charAt(0)}
                         </div>
                         <div className="bg-white p-3 rounded-r-xl rounded-bl-xl shadow-sm border border-slate-100">
                           <span className="font-bold text-xs text-slate-900 block mb-1">{comment.author}</span>
@@ -146,8 +149,8 @@ const Community = ({ user, posts, onCreatePost, onDeletePost, onDeleteComment, o
                         </div>
                       </div>
                       {user.role === 'Moderator' && (
-                        <button 
-                          onClick={() => onDeleteComment(post.id, comment.id)} 
+                        <button
+                          onClick={() => deleteComment(post.id, comment.id)}
                           className="text-slate-300 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition"
                         >
                           <X className="w-4 h-4" />
@@ -166,8 +169,8 @@ const Community = ({ user, posts, onCreatePost, onDeletePost, onDeleteComment, o
         {/* Trending Topics Widget */}
         <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-soft sticky top-8">
           <h3 className="font-bold text-slate-800 mb-6 text-lg flex items-center gap-2">
-             <Sparkles className="w-4 h-4 text-brand-500 fill-brand-500" />
-             Trending Topics
+            <Sparkles className="w-4 h-4 text-brand-500 fill-brand-500" />
+            Trending Topics
           </h3>
           <ul className="space-y-4">
             {['Summer Safety Tips', 'Dog Training 101', 'Best Cat Toys', 'Senior Pet Diet', 'Local Vet Reviews'].map((topic, i) => (
@@ -181,16 +184,16 @@ const Community = ({ user, posts, onCreatePost, onDeletePost, onDeleteComment, o
 
         {/* Mod Toggle */}
         <div className="bg-slate-900 text-slate-400 p-6 rounded-3xl text-sm border border-slate-800">
-           <p className="mb-3 font-bold text-white flex items-center gap-2">
-             <UserIcon className="w-4 h-4" /> Role Switcher
-           </p>
-           <p className="mb-4 leading-relaxed">Toggle between a regular User and a Moderator to see different controls.</p>
-           <button 
-             onClick={onToggleRole}
-             className="w-full py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-white font-bold transition border border-slate-700"
-           >
-             Switch to {user.role === 'Owner' ? 'Moderator' : 'Owner'}
-           </button>
+          <p className="mb-3 font-bold text-white flex items-center gap-2">
+            <UserIcon className="w-4 h-4" /> Role Switcher
+          </p>
+          <p className="mb-4 leading-relaxed">Toggle between a regular User and a Moderator to see different controls.</p>
+          <button
+            onClick={onToggleRole}
+            className="w-full py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-white font-bold transition border border-slate-700"
+          >
+            Switch to {user.role === 'Owner' ? 'Moderator' : 'Owner'}
+          </button>
         </div>
       </div>
     </div>
