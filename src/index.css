@@ -1,41 +1,27 @@
-:root {
-  --primary: #4f46e5;    /* Indigo */
-  --secondary: #10b981;  /* Green */
-  --danger: #ef4444;     /* Red */
-  --bg: #f3f4f6;         /* Light Gray Background */
-  --white: #ffffff;
-  --text: #1f2937;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-light text-slate-800 antialiased;
+  }
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-body { background-color: var(--bg); color: var(--text); }
-
-/* Layout Classes */
-.container { max-width: 900px; margin: 0 auto; padding: 20px; }
-.flex { display: flex; gap: 10px; }
-.justify-between { justify-content: space-between; }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-
-/* Component Styles */
-.card { background: var(--white); padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px; }
-
-/* Inputs */
-input, select, textarea {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-xl font-semibold transition-all duration-200 active:scale-95;
+  }
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-indigo-600 shadow-lg shadow-indigo-500/30;
+  }
+  .btn-secondary {
+    @apply bg-secondary text-white hover:bg-teal-600 shadow-lg shadow-teal-500/30;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-xl border border-slate-100 p-6;
+  }
+  .input {
+    @apply w-full px-4 py-2 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all;
+  }
 }
-
-/* Buttons */
-button { padding: 10px 20px; border: none; border-radius: 5px; color: white; cursor: pointer; font-weight: bold; }
-.btn-primary { background: var(--primary); }
-.btn-secondary { background: var(--secondary); }
-.btn-danger { background: var(--danger); }
-button:hover { opacity: 0.9; }
-
-/* Table */
-table { width: 100%; border-collapse: collapse; }
-th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
