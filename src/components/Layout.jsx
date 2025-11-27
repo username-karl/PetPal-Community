@@ -34,7 +34,7 @@ const Layout = ({
       {/* Mobile Header */}
       <div className="md:hidden bg-white/90 backdrop-blur-xl border-b border-slate-200 p-4 flex items-center justify-between sticky top-0 z-40 shadow-sm">
         <div className="flex items-center gap-2 font-bold text-xl">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
             <PawPrint className="w-6 h-6" />
           </div>
           <span className="tracking-tight text-slate-700">PetPals</span>
@@ -60,7 +60,7 @@ const Layout = ({
             `}
           >
             <div className="p-8 flex items-center gap-3 hidden md:flex">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
                 <PawPrint className="w-6 h-6" />
               </div>
               <span className="text-2xl font-bold tracking-tight text-slate-700">PetPals</span>
@@ -81,12 +81,12 @@ const Layout = ({
                       className={({ isActive }) => `
                         relative w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 group overflow-hidden
                         ${isActive
-                          ? 'bg-indigo-50 text-indigo-700 shadow-sm'
+                          ? 'bg-primary-50 text-primary-700 shadow-sm'
                           : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                         }
                       `}
                     >
-                      <Icon className={`w-5 h-5 ${isActive ? 'text-indigo-700' : 'text-slate-500 group-hover:text-indigo-600 transition-colors'}`} />
+                      <Icon className={`w-5 h-5 ${isActive ? 'text-primary-700' : 'text-slate-500 group-hover:text-primary-600 transition-colors'}`} />
                       {item.label}
                     </NavLink>
                   );

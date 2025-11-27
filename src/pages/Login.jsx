@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PawPrint } from 'lucide-react';
+import { PawPrint, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Login = ({ onLogin }) => {
@@ -16,95 +16,164 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-accent-50 to-secondary-50 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated Background Blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            rotate: [0, 90, 0],
+            x: [0, 50, 0],
+            y: [0, -50, 0]
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-gradient-to-br from-primary-300/40 to-accent-300/40 rounded-full blur-3xl"
         />
         <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-          className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] bg-secondary/5 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.3, 1],
+            rotate: [0, -90, 0],
+            x: [0, -30, 0],
+            y: [0, 50, 0]
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-gradient-to-br from-secondary-300/40 to-purple-300/40 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            x: [0, 30, 0],
+            y: [0, -30, 0]
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3 bg-gradient-to-br from-accent-200/30 to-primary-200/30 rounded-full blur-3xl"
         />
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-8 md:p-10 relative z-10 border border-slate-100"
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="w-full max-w-md relative z-10"
       >
-        <div className="text-center mb-10">
+        {/* Glass Card */}
+        <div className="glass rounded-3xl shadow-soft-lg p-8 md:p-10 border border-white/40">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 200,
+                damping: 15,
+                delay: 0.2
+              }}
+              className="w-20 h-20 bg-gradient-to-br from-primary-500 to-accent-500 rounded-3xl flex items-center justify-center text-white shadow-lg shadow-primary/40 mx-auto mb-6 rotate-12 hover:rotate-0 transition-all duration-300"
+            >
+              <PawPrint className="w-10 h-10" strokeWidth={2.5} />
+            </motion.div>
+
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="text-4xl font-bold text-slate-900 mb-2"
+            >
+              Welcome Back
+            </motion.h1>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="text-slate-600 text-lg"
+            >
+              Sign in to your pet community
+            </motion.p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+            >
+              <label className="block text-sm font-bold text-slate-700 mb-2.5 ml-1">
+                Email Address
+              </label>
+              <div className="relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3.5 bg-white/80 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 outline-none transition-all font-medium text-slate-900 placeholder-slate-400 hover:border-slate-300"
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+            </motion.div>
+
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              className="w-full bg-gradient-to-r from-primary-500 to-accent-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 transition-all duration-300"
+            >
+              Sign In
+            </motion.button>
+          </form>
+
+          {/* Divider */}
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.1 }}
-            className="w-16 h-16 bg-gradient-to-br from-primary to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary/30 mx-auto mb-6"
-          >
-            <PawPrint className="w-8 h-8" />
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-3xl font-bold text-slate-900"
-          >
-            Welcome Back
-          </motion.h1>
-          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-slate-500 mt-2"
+            transition={{ delay: 0.7, duration: 0.5 }}
+            className="relative my-8"
           >
-            Sign in to continue
-          </motion.p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Email Address</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all font-medium"
-              placeholder="Enter any email to test..."
-              required
-            />
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-white/80 text-slate-500 font-medium">
+                New to PetPal?
+              </span>
+            </div>
           </motion.div>
 
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/30 hover:bg-indigo-700 transition-all"
+          {/* Sign Up Link */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+            className="text-center"
           >
-            Sign In
-          </motion.button>
-        </form>
+            <Link
+              to="/register"
+              className="inline-flex items-center gap-2 text-primary-600 font-bold hover:text-primary-700 transition-colors group"
+            >
+              Create an account
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </Link>
+          </motion.div>
+        </div>
 
+        {/* Bottom Decoration */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.5 }}
           className="mt-8 text-center"
         >
-          <p className="text-slate-500 font-medium">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-primary font-bold hover:underline">
-              Create account
-            </Link>
+          <p className="text-sm text-slate-600">
+            Your trusted companion care community
           </p>
         </motion.div>
       </motion.div>
