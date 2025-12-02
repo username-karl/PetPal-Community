@@ -34,8 +34,8 @@ const Profile = ({ user, onUpdateUser, onAddPetClick }) => {
         <button
             onClick={() => setActiveTab(id)}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all ${activeTab === id
-                ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/20'
-                : 'bg-white text-slate-500 hover:bg-slate-50 hover:text-brand-600'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-primary/20'
+                : 'bg-white text-slate-500 hover:bg-slate-50 hover:text-primary'
                 }`}
         >
             <Icon className="w-5 h-5" />
@@ -60,7 +60,7 @@ const Profile = ({ user, onUpdateUser, onAddPetClick }) => {
                         </div>
                         <h3 className="font-bold text-slate-900 text-lg">{user.name}</h3>
                         <p className="text-slate-500 text-sm font-medium">{user.email}</p>
-                        <span className="mt-3 px-3 py-1 bg-brand-50 text-brand-700 text-xs font-bold uppercase tracking-wider rounded-full">{user.role}</span>
+                        <span className="mt-3 px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-wider rounded-full">{user.role}</span>
                     </div>
 
                     <nav className="space-y-2">
@@ -81,13 +81,13 @@ const Profile = ({ user, onUpdateUser, onAddPetClick }) => {
                                 <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                                     <h3 className="font-bold text-slate-900 text-lg">Profile Information</h3>
                                     {!isEditingProfile ? (
-                                        <button onClick={() => setIsEditingProfile(true)} className="text-brand-600 hover:bg-brand-50 px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2">
+                                        <button onClick={() => setIsEditingProfile(true)} className="text-primary hover:bg-indigo-50 px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2">
                                             <Edit3 className="w-4 h-4" /> Edit
                                         </button>
                                     ) : (
                                         <div className="flex gap-2">
                                             <button onClick={() => setIsEditingProfile(false)} className="text-slate-500 hover:bg-slate-100 px-4 py-2 rounded-xl text-sm font-bold transition">Cancel</button>
-                                            <button onClick={handleSaveProfile} className="bg-brand-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-brand-500/20">Save Changes</button>
+                                            <button onClick={handleSaveProfile} className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-primary/20">Save Changes</button>
                                         </div>
                                     )}
                                 </div>
@@ -99,7 +99,7 @@ const Profile = ({ user, onUpdateUser, onAddPetClick }) => {
                                                 <input
                                                     value={profileForm.name}
                                                     onChange={e => setProfileForm({ ...profileForm, name: e.target.value })}
-                                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-slate-900"
+                                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary outline-none font-bold text-slate-900"
                                                 />
                                             </div>
                                             <div className="space-y-2">
@@ -107,7 +107,7 @@ const Profile = ({ user, onUpdateUser, onAddPetClick }) => {
                                                 <input
                                                     value={profileForm.location}
                                                     onChange={e => setProfileForm({ ...profileForm, location: e.target.value })}
-                                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-bold text-slate-900"
+                                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary outline-none font-bold text-slate-900"
                                                 />
                                             </div>
                                             <div className="md:col-span-2 space-y-2">
@@ -115,7 +115,7 @@ const Profile = ({ user, onUpdateUser, onAddPetClick }) => {
                                                 <textarea
                                                     value={profileForm.bio}
                                                     onChange={e => setProfileForm({ ...profileForm, bio: e.target.value })}
-                                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none font-medium text-slate-600 h-32 resize-none"
+                                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary outline-none font-medium text-slate-600 h-32 resize-none"
                                                 />
                                             </div>
                                         </div>
@@ -172,7 +172,7 @@ const Profile = ({ user, onUpdateUser, onAddPetClick }) => {
                         <div className="space-y-6">
                             <div className="flex justify-between items-center">
                                 <h3 className="text-xl font-bold text-slate-900">My Pets</h3>
-                                <button onClick={onAddPetClick} className="bg-brand-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-brand-700 transition shadow-lg shadow-brand-500/20 flex items-center gap-2">
+                                <button onClick={onAddPetClick} className="bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-indigo-700 transition shadow-lg shadow-primary/20 flex items-center gap-2">
                                     <Plus className="w-4 h-4" /> Add Pet
                                 </button>
                             </div>
@@ -187,10 +187,10 @@ const Profile = ({ user, onUpdateUser, onAddPetClick }) => {
                                         <div className="flex-1">
                                             <div className="flex justify-between items-start">
                                                 <div>
-                                                    <h4 className="font-bold text-slate-900 text-lg group-hover:text-brand-600 transition">{pet.name}</h4>
+                                                    <h4 className="font-bold text-slate-900 text-lg group-hover:text-primary transition">{pet.name}</h4>
                                                     <p className="text-xs font-bold text-slate-500 uppercase">{pet.breed}</p>
                                                 </div>
-                                                <div className="bg-slate-50 p-2 rounded-lg text-slate-400 group-hover:bg-brand-50 group-hover:text-brand-600 transition">
+                                                <div className="bg-slate-50 p-2 rounded-lg text-slate-400 group-hover:bg-indigo-50 group-hover:text-primary transition">
                                                     <ChevronRight className="w-5 h-5" />
                                                 </div>
                                             </div>
@@ -222,7 +222,7 @@ const Profile = ({ user, onUpdateUser, onAddPetClick }) => {
                                             </div>
                                             <button
                                                 onClick={() => setNotifications({ ...notifications, [key]: !enabled })}
-                                                className={`w-12 h-6 rounded-full transition-colors relative ${enabled ? 'bg-brand-500' : 'bg-slate-200'}`}
+                                                className={`w-12 h-6 rounded-full transition-colors relative ${enabled ? 'bg-indigo-600' : 'bg-slate-200'}`}
                                             >
                                                 <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform shadow-sm ${enabled ? 'translate-x-6' : 'translate-x-0'}`}></div>
                                             </button>
@@ -240,11 +240,11 @@ const Profile = ({ user, onUpdateUser, onAddPetClick }) => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase">Current Password</label>
-                                            <input type="password" placeholder="••••••••" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" />
+                                            <input type="password" placeholder="••••••••" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary outline-none" />
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-slate-500 uppercase">New Password</label>
-                                            <input type="password" placeholder="••••••••" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" />
+                                            <input type="password" placeholder="••••••••" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary outline-none" />
                                         </div>
                                     </div>
                                     <div className="flex justify-end">

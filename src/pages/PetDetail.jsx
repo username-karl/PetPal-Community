@@ -42,7 +42,7 @@ const PetDetail = () => {
     return (
       <div className="p-8 text-center">
         <p className="text-slate-500 mb-4">Pet details not found.</p>
-        <button onClick={() => navigate('/pets')} className="text-brand-600 font-bold hover:underline">
+        <button onClick={() => navigate('/pets')} className="text-primary font-bold hover:underline">
           Go back to My Pets
         </button>
       </div>
@@ -77,7 +77,7 @@ const PetDetail = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <button onClick={() => navigate('/pets')} className="flex items-center gap-2 text-slate-500 hover:text-brand-600 transition font-medium">
+      <button onClick={() => navigate('/pets')} className="flex items-center gap-2 text-slate-500 hover:text-primary transition font-medium">
         <ArrowLeft className="w-5 h-5" /> Back to Pets
       </button>
 
@@ -135,7 +135,7 @@ const PetDetail = () => {
                   </button>
                   <button
                     onClick={handleSavePet}
-                    className="px-5 py-2.5 rounded-xl bg-brand-500 text-white hover:bg-brand-400 font-bold transition shadow-lg shadow-brand-500/20 flex items-center gap-2"
+                    className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-400 font-bold transition shadow-lg shadow-primary/20 flex items-center gap-2"
                   >
                     <Save className="w-4 h-4" /> Save Changes
                   </button>
@@ -170,7 +170,7 @@ const PetDetail = () => {
                       step="0.1"
                       value={editForm.age}
                       onChange={e => setEditForm({ ...editForm, age: parseFloat(e.target.value) })}
-                      className="font-bold text-slate-900 text-xl w-20 border-b border-slate-300 focus:border-brand-500 outline-none bg-transparent p-0"
+                      className="font-bold text-slate-900 text-xl w-20 border-b border-slate-300 focus:border-primary outline-none bg-transparent p-0"
                     />
                     <span className="text-slate-500 font-medium">Years</span>
                   </div>
@@ -193,7 +193,7 @@ const PetDetail = () => {
                       step="0.1"
                       value={editForm.weight}
                       onChange={e => setEditForm({ ...editForm, weight: parseFloat(e.target.value) })}
-                      className="font-bold text-slate-900 text-xl w-20 border-b border-slate-300 focus:border-brand-500 outline-none bg-transparent p-0"
+                      className="font-bold text-slate-900 text-xl w-20 border-b border-slate-300 focus:border-primary outline-none bg-transparent p-0"
                     />
                     <span className="text-slate-500 font-medium">kg</span>
                   </div>
@@ -223,17 +223,17 @@ const PetDetail = () => {
             <form onSubmit={handleReminderSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Reminder Title</label>
-                <input name="title" required placeholder="e.g., Heartworm Medication" className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" />
+                <input name="title" required placeholder="e.g., Heartworm Medication" className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary outline-none" />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">Due Date</label>
-                  <input name="date" type="date" required className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none" />
+                  <input name="date" type="date" required className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary outline-none" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">Type</label>
                   <div className="relative">
-                    <select name="type" className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 outline-none appearance-none bg-white">
+                    <select name="type" className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary outline-none appearance-none bg-white">
                       <option value="Vaccination">Vaccination</option>
                       <option value="Medication">Medication</option>
                       <option value="Grooming">Grooming</option>
@@ -246,7 +246,7 @@ const PetDetail = () => {
               </div>
               <div className="flex gap-3 justify-end pt-2">
                 <button type="button" onClick={() => setIsAddingReminder(false)} className="px-5 py-2.5 text-slate-600 hover:bg-slate-200 rounded-xl font-medium transition">Cancel</button>
-                <button type="submit" className="px-5 py-2.5 bg-brand-600 text-white rounded-xl hover:bg-brand-700 font-bold transition">Save Reminder</button>
+                <button type="submit" className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 font-bold transition">Save Reminder</button>
               </div>
             </form>
           </div>
@@ -262,7 +262,7 @@ const PetDetail = () => {
             activeReminders.map(r => (
               <div key={r.id} className="flex items-center justify-between p-5 hover:bg-slate-50 rounded-2xl border border-slate-100 transition group bg-white">
                 <div className="flex items-center gap-4">
-                  <button onClick={() => toggleReminder(r.id)} className="w-6 h-6 rounded-full border-2 border-slate-300 hover:border-brand-500 flex items-center justify-center transition-all" title="Mark as completed">
+                  <button onClick={() => toggleReminder(r.id)} className="w-6 h-6 rounded-full border-2 border-slate-300 hover:border-primary flex items-center justify-center transition-all" title="Mark as completed">
                   </button>
                   <div>
                     <div className="flex items-center gap-3">
@@ -308,7 +308,7 @@ const PetDetail = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => toggleReminder(r.id)} className="text-slate-400 hover:text-brand-600 p-1.5 hover:bg-white rounded-lg transition" title="Undo Completion">
+                      <button onClick={() => toggleReminder(r.id)} className="text-slate-400 hover:text-primary p-1.5 hover:bg-white rounded-lg transition" title="Undo Completion">
                         <RotateCcw className="w-4 h-4" />
                       </button>
                       <button onClick={() => deleteReminder(r.id)} className="text-slate-400 hover:text-rose-600 p-1.5 hover:bg-white rounded-lg transition" title="Delete Permanently">

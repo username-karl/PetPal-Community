@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import { PawPrint, Mail, Lock, AlertCircle } from 'lucide-react';
+=======
+import { PawPrint, Mail } from 'lucide-react';
+>>>>>>> 34d3c0ae101413d97f82ff1706bc81a1ae32deb7
 import { motion } from 'framer-motion';
 
 const Login = ({ onLogin }) => {
@@ -99,12 +103,17 @@ const Login = ({ onLogin }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.5 }}
+<<<<<<< HEAD
               className="text-slate-700 text-lg font-medium"
+=======
+              className="text-slate-600 text-lg"
+>>>>>>> 34d3c0ae101413d97f82ff1706bc81a1ae32deb7
             >
               Sign in to your pet community
             </motion.p>
           </div>
 
+<<<<<<< HEAD
           {/* Error Message */}
           {error && (
             <motion.div
@@ -122,6 +131,10 @@ const Login = ({ onLogin }) => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+=======
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+>>>>>>> 34d3c0ae101413d97f82ff1706bc81a1ae32deb7
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -145,6 +158,7 @@ const Login = ({ onLogin }) => {
               </div>
             </motion.div>
 
+<<<<<<< HEAD
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -168,6 +182,8 @@ const Login = ({ onLogin }) => {
               </div>
             </motion.div>
 
+=======
+>>>>>>> 34d3c0ae101413d97f82ff1706bc81a1ae32deb7
             <motion.button
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -175,10 +191,16 @@ const Login = ({ onLogin }) => {
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
+<<<<<<< HEAD
               disabled={isLoading}
               className="w-full bg-gradient-to-r from-primary-500 to-accent-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Signing In...' : 'Sign In'}
+=======
+              className="w-full bg-gradient-to-r from-primary-500 to-accent-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 transition-all duration-300"
+            >
+              Sign In
+>>>>>>> 34d3c0ae101413d97f82ff1706bc81a1ae32deb7
             </motion.button>
           </form>
 
