@@ -173,7 +173,7 @@ const Community = ({ user, onToggleRole }) => {
             Trending Topics
           </h3>
           <ul className="space-y-4">
-            {['Summer Safety Tips', 'Dog Training 101', 'Best Cat Toys', 'Senior Pet Diet', 'Local Vet Reviews'].map((topic, i) => (
+            {[].map((topic, i) => (
               <li key={i} className="flex items-center gap-4 text-slate-600 hover:text-brand-600 cursor-pointer group transition">
                 <span className="w-8 h-8 rounded-lg bg-slate-50 text-slate-500 group-hover:bg-brand-500 group-hover:text-white flex items-center justify-center text-sm font-bold transition duration-300">#{i + 1}</span>
                 <span className="font-medium">{topic}</span>

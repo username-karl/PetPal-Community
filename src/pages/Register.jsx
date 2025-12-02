@@ -11,7 +11,7 @@ const Register = ({ onRegister }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (name && email && password) {
-      onRegister({ name, email });
+      onRegister({ name, email, password });
       navigate('/');
     }
   };

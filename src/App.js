@@ -24,15 +24,15 @@ const ProtectedRoute = ({ children, isAuthenticated }) => {
 };
 
 const App = () => {
-  const { user, login, logout } = useAuth();
+  const { user, login, logout, register } = useAuth();
   const [isAddingPet, setIsAddingPet] = React.useState(false);
 
-  const handleLogin = async (email) => {
-    await login(email);
+  const handleLogin = async (email, password) => {
+    await login(email, password);
   };
 
-  const handleRegister = async ({ email }) => {
-    await login(email);
+  const handleRegister = async (userData) => {
+    await register(userData);
   };
 
   const handleLogout = () => {
