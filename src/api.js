@@ -25,6 +25,14 @@ export const api = {
         });
         return handleResponse(response);
     },
+    updateUser: async (userId, data) => {
+        const response = await fetch(`${API_URL}/auth/user/${userId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        return handleResponse(response);
+    },
     getPets: async (userId) => {
         const response = await fetch(`${API_URL}/pets?userId=${userId}`);
         return handleResponse(response);
