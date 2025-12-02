@@ -25,7 +25,14 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    private String role; // e.g., "Owner", "Moderator"
+    private String role;
 
+    @Column(name = "avatar_url")
     private String avatarUrl;
+
+    @Column(length = 200)
+    private String location;
+
+    @Column(length = 500)
+    private String bio;
 }

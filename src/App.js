@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import { useAuth } from './AuthContext';
 import { DataProvider } from './context/DataContext';
 import AddPetModal from './components/AddPetModal';
+import { api } from './api';
 
 // Pages
 import Login from './pages/Login';
@@ -24,7 +25,7 @@ const ProtectedRoute = ({ children, isAuthenticated }) => {
 };
 
 const App = () => {
-  const { user, login, logout, register } = useAuth();
+  const { user, login, logout, register, setUser } = useAuth();
   const [isAddingPet, setIsAddingPet] = React.useState(false);
 
   const handleLogin = async (email, password) => {
@@ -33,6 +34,16 @@ const App = () => {
 
   const handleRegister = async (userData) => {
     await register(userData);
+  };
+
+  const handleUpdateUser = async (data) => {
+    try {
+      const updatedUser = await api.updateUser(user.id, data);
+      setUser(updatedUser);
+      localStorage.setItem('petpal_user', JSON.stringify(updatedUser));
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
   };
 
   const handleLogout = () => {
@@ -97,7 +108,7 @@ const App = () => {
                     element={
                       <Profile
                         user={user}
-                        onUpdateUser={(data) => console.log('Update user:', data)}
+                        onUpdateUser={handleUpdateUser}
                         onAddPetClick={() => setIsAddingPet(true)}
                       />
                     }
