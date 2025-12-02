@@ -17,10 +17,10 @@ const Register = ({ onRegister }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-50 to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-brand-900/5 p-8 md:p-10 animate-in fade-in zoom-in duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-indigo-900/5 p-8 md:p-10 animate-in fade-in zoom-in duration-300">
         <div className="text-center mb-10">
-          <div className="w-16 h-16 bg-brand-600 rounded-2xl flex items-center justify-center text-white shadow-glow mx-auto mb-6">
+          <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-glow mx-auto mb-6">
             <PawPrint className="w-8 h-8" />
           </div>
           <h1 className="text-3xl font-bold text-slate-900">Create Account</h1>
@@ -36,7 +36,7 @@ const Register = ({ onRegister }) => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white outline-none transition-all font-medium"
+                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:bg-white outline-none transition-all font-medium"
                 placeholder="Alex Johnson"
                 required
               />
@@ -51,7 +51,7 @@ const Register = ({ onRegister }) => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white outline-none transition-all font-medium"
+                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:bg-white outline-none transition-all font-medium"
                 placeholder="you@example.com"
                 required
               />
@@ -66,7 +66,7 @@ const Register = ({ onRegister }) => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white outline-none transition-all font-medium"
+                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:bg-white outline-none transition-all font-medium"
                 placeholder="••••••••"
                 required
               />
@@ -75,7 +75,7 @@ const Register = ({ onRegister }) => {
 
           <button
             type="submit"
-            className="w-full bg-brand-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-brand-500/30 hover:bg-brand-700 hover:shadow-brand-600/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-2 mt-4"
+            className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/30 hover:bg-indigo-700 hover:shadow-primary/30 hover:-translate-y-1 transition-all flex items-center justify-center gap-2 mt-4"
           >
             Get Started <ArrowRight className="w-5 h-5" />
           </button>
@@ -84,7 +84,7 @@ const Register = ({ onRegister }) => {
         <div className="mt-8 text-center">
           <p className="text-slate-500 font-medium">
             Already have an account?{' '}
-            <Link to="/login" className="text-brand-600 font-bold hover:underline">
+            <Link to="/login" className="text-primary font-bold hover:underline">
               Sign in
             </Link>
           </p>

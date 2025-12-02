@@ -47,10 +47,10 @@ const Stepper = ({
                             <div className="flex flex-col items-center">
                                 <div
                                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300 ${index < currentStep
-                                            ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/30'
-                                            : index === currentStep
-                                                ? 'bg-brand-600 text-white scale-110 shadow-xl shadow-brand-500/40'
-                                                : 'bg-slate-100 text-slate-400'
+                                        ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/30'
+                                        : index === currentStep
+                                            ? 'bg-brand-600 text-white scale-110 shadow-xl shadow-brand-500/40'
+                                            : 'bg-slate-100 text-slate-400'
                                         }`}
                                 >
                                     {index < currentStep ? (
@@ -89,8 +89,8 @@ const Stepper = ({
                     onClick={handleBack}
                     disabled={currentStep === 0}
                     className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all ${currentStep === 0
-                            ? 'bg-slate-50 text-slate-300 cursor-not-allowed'
-                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:shadow-md'
+                        ? 'bg-slate-50 text-slate-300 cursor-not-allowed'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:shadow-md'
                         }`}
                 >
                     <ChevronLeft className="w-5 h-5" />

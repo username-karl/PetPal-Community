@@ -5,6 +5,7 @@ import { useAuth } from './AuthContext';
 import { DataProvider } from './context/DataContext';
 import AddPetModal from './components/AddPetModal';
 import { api } from './api';
+import ClickSpark from './components/ClickSpark';
 
 // Pages
 import Login from './pages/Login';
@@ -53,75 +54,83 @@ const App = () => {
   const isAuthenticated = !!user;
 
   return (
-    <DataProvider>
-      <Routes>
-        {/* Public Routes */}
-        <Route
-          path="/login"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/" replace />
-            ) : (
-              <Login onLogin={handleLogin} />
-            )
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            isAuthenticated ? (
-              <Navigate to="/" replace />
-            ) : (
-              <Register onRegister={handleRegister} />
-            )
-          }
-        />
+    <ClickSpark
+      sparkColor='#000'
+      sparkSize={10}
+      sparkRadius={15}
+      sparkCount={8}
+      duration={400}
+    >
+      <DataProvider>
+        <Routes>
+          {/* Public Routes */}
+          <Route
+            path="/login"
+            element={
+              isAuthenticated ? (
+                <Navigate to="/" replace />
+              ) : (
+                <Login onLogin={handleLogin} />
+              )
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              isAuthenticated ? (
+                <Navigate to="/" replace />
+              ) : (
+                <Register onRegister={handleRegister} />
+              )
+            }
+          />
 
-        {/* Protected Routes */}
-        <Route
-          path="/*"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <Layout
-                isModerator={user?.role === 'Moderator'}
-                userName={user?.name}
-                userRole={user?.role}
-                userAvatar={user?.avatarUrl}
-                onLogout={handleLogout}
-              >
-                <Routes>
-                  <Route path="/" element={<Dashboard user={user} />} />
-                  <Route path="/pets" element={<MyPets onAddPetClick={() => setIsAddingPet(true)} />} />
-                  <Route path="/pets/:id" element={<PetDetail />} />
-                  <Route
-                    path="/community"
-                    element={
-                      <Community
-                        user={user}
-                        onToggleRole={() => console.log('Toggle role')}
-                      />
-                    }
-                  />
-                  <Route path="/moderation" element={<Moderation />} />
-                  <Route
-                    path="/profile"
-                    element={
-                      <Profile
-                        user={user}
-                        onUpdateUser={handleUpdateUser}
-                        onAddPetClick={() => setIsAddingPet(true)}
-                      />
-                    }
-                  />
-                </Routes>
+          {/* Protected Routes */}
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <Layout
+                  isModerator={user?.role === 'Moderator'}
+                  userName={user?.name}
+                  userRole={user?.role}
+                  userAvatar={user?.avatarUrl}
+                  onLogout={handleLogout}
+                >
+                  <Routes>
+                    <Route path="/" element={<Dashboard user={user} />} />
+                    <Route path="/pets" element={<MyPets onAddPetClick={() => setIsAddingPet(true)} />} />
+                    <Route path="/pets/:id" element={<PetDetail />} />
+                    <Route
+                      path="/community"
+                      element={
+                        <Community
+                          user={user}
+                          onToggleRole={() => console.log('Toggle role')}
+                        />
+                      }
+                    />
+                    <Route path="/moderation" element={<Moderation />} />
+                    <Route
+                      path="/profile"
+                      element={
+                        <Profile
+                          user={user}
+                          onUpdateUser={handleUpdateUser}
+                          onAddPetClick={() => setIsAddingPet(true)}
+                        />
+                      }
+                    />
+                  </Routes>
 
-                {isAddingPet && <AddPetModal onClose={() => setIsAddingPet(false)} />}
-              </Layout>
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </DataProvider>
+                  {isAddingPet && <AddPetModal onClose={() => setIsAddingPet(false)} />}
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </DataProvider>
+    </ClickSpark>
   );
 };
 
