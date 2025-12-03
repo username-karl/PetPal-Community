@@ -51,9 +51,11 @@ const PetDetail = () => {
     );
   }
 
+
   const petReminders = reminders.filter(r => r.petId === pet.id);
   const activeReminders = petReminders.filter(r => !r.completed).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const completedReminders = petReminders.filter(r => r.completed).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
 
   const handleSavePet = () => {
     updatePet(pet.id, editForm);

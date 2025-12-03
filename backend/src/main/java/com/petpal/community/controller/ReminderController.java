@@ -6,7 +6,11 @@ import com.petpal.community.service.ReminderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/reminders")
@@ -25,8 +29,20 @@ public class ReminderController {
     }
 
     @PostMapping
-    public ResponseEntity<Reminder> createReminder(@RequestBody Reminder reminder, @RequestParam Long petId) {
+    public ResponseEntity<Reminder> createReminder(@RequestBody Map<String, Object> reminderData,
+            @RequestParam Long petId) {
         return petService.getPetById(petId).map(pet -> {
+            Reminder reminder = new Reminder();
+            reminder.setTitle((String) reminderData.get("title"));
+            reminder.setType((String) reminderData.get("type"));
+
+            // Parse date string (YYYY-MM-DD) to LocalDateTime
+            String dateString = (String) reminderData.get("date");
+            LocalDate localDate = LocalDate.parse(dateString);
+            LocalDateTime dateTime = LocalDateTime.of(localDate, LocalTime.MIDNIGHT);
+            reminder.setDate(dateTime);
+
+            reminder.setCompleted(false);
             reminder.setPet(pet);
             return ResponseEntity.ok(reminderService.createReminder(reminder));
         }).orElse(ResponseEntity.badRequest().build());

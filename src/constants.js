@@ -1,11 +1,4 @@
 export const PetType = {
-<<<<<<< HEAD
-    DOG: 'Dog',
-    CAT: 'Cat',
-    BIRD: 'Bird',
-    OTHER: 'Other'
-};
-=======
   DOG: 'Dog',
   CAT: 'Cat',
   BIRD: 'Bird',
@@ -29,4 +22,3 @@ export const PET_CARE_TIPS = [
   'Grooming keeps them comfortable! Regular brushing reduces shedding and prevents matting, especially for long-haired breeds.',
   'Safety first! Keep toxic plants, foods, and chemicals out of reach, and ensure your pet has proper identification.',
 ];
->>>>>>> 34d3c0ae101413d97f82ff1706bc81a1ae32deb7

@@ -17,19 +17,12 @@ const AddPetModal = ({ onClose }) => {
     gender: '',
   });
 
-<<<<<<< HEAD
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleFinalStepCompleted = () => {
-=======
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-
->>>>>>> 34d3c0ae101413d97f82ff1706bc81a1ae32deb7
     const newPetData = {
       name: formData.name,
       type: formData.type,
@@ -57,7 +50,6 @@ const AddPetModal = ({ onClose }) => {
             <X className="w-6 h-6 text-slate-400" />
           </button>
         </div>
-<<<<<<< HEAD
 
         <Stepper
           initialStep={0}
@@ -251,42 +243,6 @@ const AddPetModal = ({ onClose }) => {
             </div>
           </Step>
         </Stepper>
-=======
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">Pet Name</label>
-            <input name="name" required className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="e.g., Max" />
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Type</label>
-              <div className="relative">
-                <select name="type" className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none bg-white">
-                  {Object.values(PetType).map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-                <ChevronRight className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Breed</label>
-              <input name="breed" required className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="e.g., Labrador" />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Age (years)</label>
-              <input name="age" type="number" step="0.1" required className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Weight (kg)</label>
-              <input name="weight" type="number" step="0.1" required className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" />
-            </div>
-          </div>
-          <button type="submit" className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-primary/20 mt-2">
-            Create Profile
-          </button>
-        </form>
->>>>>>> 34d3c0ae101413d97f82ff1706bc81a1ae32deb7
       </div>
     </div>
   );

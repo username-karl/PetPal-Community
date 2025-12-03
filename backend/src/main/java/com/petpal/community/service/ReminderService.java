@@ -13,7 +13,7 @@ public class ReminderService {
     private ReminderRepository reminderRepository;
 
     public List<Reminder> getRemindersByPet(Long petId) {
-        return reminderRepository.findByPetId(petId);
+        return reminderRepository.findByPet_Id(petId);
     }
 
     public Reminder createReminder(Reminder reminder) {
