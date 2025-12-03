@@ -1,5 +1,7 @@
 package com.petpal.community.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,5 +31,12 @@ public class Reminder {
 
     @ManyToOne
     @JoinColumn(name = "pet_id", nullable = false)
+    @JsonIgnoreProperties({ "reminders", "owner" })
     private Pet pet;
+
+    // Expose petId directly in JSON for easier frontend consumption
+    @JsonProperty("petId")
+    public Long getPetId() {
+        return pet != null ? pet.getId() : null;
+    }
 }
