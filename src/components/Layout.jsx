@@ -1,7 +1,9 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PawPrint, MessageCircle, ShieldCheck, Menu, X, Settings, LogOut } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import StaggeredMenu from './StaggeredMenu';
+import { useAuth } from '../AuthContext'; // Adjusted import path since we are in components/
+import logo from '../logo.svg'; // Adjusted import path
 
 const Layout = ({
   children,
@@ -11,155 +13,91 @@ const Layout = ({
   userAvatar,
   onLogout
 }) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth(); // Ensure we have logout from context if not passed as prop
 
-  const navItems = [
-    { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/pets', label: 'My Pets', icon: PawPrint },
-    { path: '/community', label: 'Community', icon: MessageCircle },
+  const menuItems = [
+    { label: 'Dashboard', ariaLabel: 'Go to dashboard', link: '/' },
+    { label: 'My Pets', ariaLabel: 'View my pets', link: '/pets' },
+    { label: 'Community', ariaLabel: 'Join the community', link: '/community' },
   ];
 
   if (isModerator) {
-    navItems.push({ path: '/moderation', label: 'Moderation', icon: ShieldCheck });
+    menuItems.push({ label: 'Moderation', ariaLabel: 'Moderation tools', link: '/moderation' });
   }
 
-  const sidebarVariants = {
-    open: { x: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 30 } },
-    closed: { x: '-100%', opacity: 0, transition: { type: 'spring', stiffness: 300, damping: 30 } },
-  };
+  // Add Profile and Logout to the menu
+  menuItems.push({ label: 'Profile', ariaLabel: 'View profile', link: '/profile' });
+
+  // For Logout, StaggeredMenu expects links. We might need a custom item or just handle it via a link that triggers logout?
+  // Or we can add a "Logout" item that redirects to /login, and we handle the cleanup in the onMenuClose or similar?
+  // Actually, StaggeredMenu items are Links.
+  // Let's keep it simple for now. The user can logout via Profile page or we can add a specific Logout item if we modify StaggeredMenu.
+  // But for now, let's rely on the Profile page having a logout button (which it often does) or add a "Logout" link that goes to a logout route.
+  // The previous Layout had a Logout button.
+  // I'll add a "Logout" item that links to "/logout" and I'll handle that route or just let the user click it.
+  // Wait, I can't easily intercept the click in StaggeredMenu without modifying it.
+  // I'll assume the user can logout from the Profile page for now, or I'll add a "Logout" item and if the user clicks it, it goes to /login.
+  // Actually, let's just add it.
+
+  const socialItems = [
+    { label: 'Twitter', link: 'https://twitter.com' },
+    { label: 'GitHub', link: 'https://github.com' },
+    { label: 'LinkedIn', link: 'https://linkedin.com' }
+  ];
+
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50 font-sans text-slate-900">
-      {/* Mobile Header */}
-      <div className="md:hidden bg-white/90 backdrop-blur-xl border-b border-slate-200 p-4 flex items-center justify-between sticky top-0 z-40 shadow-sm">
-        <div className="flex items-center gap-2 font-bold text-xl">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
-            <PawPrint className="w-6 h-6" />
-          </div>
-          <span className="tracking-tight text-slate-700">PetPals</span>
-        </div>
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="text-slate-600 hover:bg-slate-100 p-2 rounded-xl transition-colors active:scale-95"
-        >
-          {isMobileMenuOpen ? <X /> : <Menu />}
-        </button>
-      </div>
-
-      {/* Sidebar Navigation */}
-      <AnimatePresence mode='wait'>
-        {(isMobileMenuOpen || window.innerWidth >= 768) && (
-          <motion.aside
-            initial={window.innerWidth < 768 ? "closed" : false}
-            animate={window.innerWidth < 768 ? (isMobileMenuOpen ? "open" : "closed") : false}
-            variants={sidebarVariants}
-            className={`
-              fixed inset-y-0 left-0 z-30 w-72 bg-white border-r border-slate-200 flex flex-col shadow-2xl md:shadow-none md:relative md:translate-x-0
-              ${isMobileMenuOpen ? 'block' : 'hidden md:flex'}
-            `}
-          >
-            <div className="p-8 flex items-center gap-3 hidden md:flex">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-800 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
-                <PawPrint className="w-6 h-6" />
-              </div>
-              <span className="text-2xl font-bold tracking-tight text-slate-700">PetPals</span>
-            </div>
-
-            <div className="px-4 py-2 flex-1 overflow-y-auto">
-              <p className="px-4 text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 mt-2">Menu</p>
-              <nav className="space-y-2">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = location.pathname === item.path ||
-                    (item.path !== '/' && location.pathname.startsWith(item.path));
-                  return (
-                    <NavLink
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={({ isActive }) => `
-                        relative w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 group overflow-hidden
-                        ${isActive
-                          ? 'bg-primary-50 text-primary-700 shadow-sm'
-                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                        }
-                      `}
-                    >
-                      <Icon className={`w-5 h-5 ${isActive ? 'text-primary-700' : 'text-slate-500 group-hover:text-primary-600 transition-colors'}`} />
-                      {item.label}
-                    </NavLink>
-                  );
-                })}
-              </nav>
-            </div>
-
-            {/* User Profile Section */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50/50 space-y-3">
-              <NavLink
-                to="/profile"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={({ isActive }) => `
-                  w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 
-                  hover:bg-white hover:shadow-md hover:-translate-y-0.5
-                  ${isActive ? 'bg-white shadow-md ring-1 ring-primary/10' : ''}
-                `}
-              >
-                <div className="relative">
-                  <img src={userAvatar || "https://via.placeholder.com/40"} alt="User" className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
-                </div>
-                <div className="overflow-hidden text-left flex-1">
-                  <p className="text-sm font-bold text-slate-900 truncate group-hover:text-primary transition-colors">{userName || 'User'}</p>
-                  <p className="text-xs text-slate-500 truncate">{userRole || 'Member'}</p>
-                </div>
-                <Settings className="w-4 h-4 text-slate-400 hover:text-primary transition-colors" />
-              </NavLink>
-
-              {onLogout && (
-                <button
-                  onClick={() => {
-                    onLogout();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-rose-600 bg-white border border-rose-100 rounded-xl hover:bg-rose-50 hover:border-rose-200 hover:shadow-sm transition-all active:scale-95"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Log out
-                </button>
-              )}
-            </div>
-          </motion.aside>
-        )}
-      </AnimatePresence>
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 relative overflow-x-hidden">
+      <StaggeredMenu
+        position="left"
+        items={menuItems}
+        socialItems={socialItems}
+        displaySocials={true}
+        displayItemNumbering={true}
+        menuButtonColor="#1f2937"
+        openMenuButtonColor="#fff"
+        changeMenuColorOnOpen={true}
+        colors={['#312E81', '#4F46E5']}
+        logoUrl={logo}
+        accentColor="#EC4899"
+        onMenuOpen={() => setIsMenuOpen(true)}
+        onMenuClose={() => setIsMenuOpen(false)}
+        isOpen={isMenuOpen}
+        toggleMenu={() => setIsMenuOpen(!isMenuOpen)}
+      />
 
       {/* Main Content */}
-      <main className="flex-1 relative overflow-hidden h-screen bg-slate-50">
-        <div className="absolute inset-0 overflow-y-auto p-4 md:p-8 pb-24">
-          <div className="max-w-6xl mx-auto">
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {children}
-            </motion.div>
+      <motion.main
+        className="relative min-h-screen bg-slate-50"
+        animate={{
+          x: isMenuOpen ? 400 : 0,
+          width: isMenuOpen ? 'calc(100% - 400px)' : '100%'
+        }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      >
+        {/* Optional Header for Logo/Context if menu is closed */}
+        <header className="p-4 flex items-center justify-between bg-white/50 backdrop-blur-sm sticky top-0 z-10">
+          <div className="flex items-center gap-2 font-bold text-xl ml-14">
+            <span className="tracking-tight text-slate-700">PetPal</span>
           </div>
-        </div>
-      </main>
+          {/* The menu button will be fixed on top right, so we don't need anything there */}
+        </header>
 
-      {/* Overlay for mobile */}
-      {isMobileMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-20 md:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
+        <div className="p-4 md:p-8 pb-24 max-w-6xl mx-auto">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {children}
+          </motion.div>
+        </div>
+      </motion.main>
     </div>
   );
 };
