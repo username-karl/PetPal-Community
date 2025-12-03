@@ -30,16 +30,16 @@ const Layout = ({
   // Add Profile and Logout to the menu
   menuItems.push({ label: 'Profile', ariaLabel: 'View profile', link: '/profile' });
 
-  // For Logout, StaggeredMenu expects links. We might need a custom item or just handle it via a link that triggers logout?
-  // Or we can add a "Logout" item that redirects to /login, and we handle the cleanup in the onMenuClose or similar?
-  // Actually, StaggeredMenu items are Links.
-  // Let's keep it simple for now. The user can logout via Profile page or we can add a specific Logout item if we modify StaggeredMenu.
-  // But for now, let's rely on the Profile page having a logout button (which it often does) or add a "Logout" link that goes to a logout route.
-  // The previous Layout had a Logout button.
-  // I'll add a "Logout" item that links to "/logout" and I'll handle that route or just let the user click it.
-  // Wait, I can't easily intercept the click in StaggeredMenu without modifying it.
-  // I'll assume the user can logout from the Profile page for now, or I'll add a "Logout" item and if the user clicks it, it goes to /login.
-  // Actually, let's just add it.
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  menuItems.push({
+    label: 'Logout',
+    ariaLabel: 'Logout from application',
+    action: handleLogout
+  });
 
   const socialItems = [
     { label: 'Twitter', link: 'https://twitter.com' },
