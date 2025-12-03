@@ -1,5 +1,6 @@
 package com.petpal.community.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +31,12 @@ public class Pet {
 
     private String imageUrl;
 
+    private String color;
+
+    private String gender;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({ "pets", "posts" })
     private User owner;
 }

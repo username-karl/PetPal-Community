@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/pets")
@@ -32,11 +33,30 @@ public class PetController {
     }
 
     @PostMapping
-    public ResponseEntity<Pet> createPet(@RequestBody Pet pet, @RequestParam Long userId) {
-        return userService.findById(userId).map(user -> {
-            pet.setOwner(user);
-            return ResponseEntity.ok(petService.createPet(pet));
-        }).orElse(ResponseEntity.badRequest().build());
+    public ResponseEntity<?> createPet(@RequestBody Pet pet, @RequestParam Long userId) {
+        try {
+            // Validate required fields
+            if (pet.getName() == null || pet.getName().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Pet name is required");
+            }
+            if (pet.getType() == null || pet.getType().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Pet type is required");
+            }
+
+            // Find user
+            Optional<User> userOptional = userService.findById(userId);
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.badRequest().body("User not found with id: " + userId);
+            }
+
+            // Set owner and save
+            pet.setOwner(userOptional.get());
+            Pet savedPet = petService.createPet(pet);
+            return ResponseEntity.ok(savedPet);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Error creating pet: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
