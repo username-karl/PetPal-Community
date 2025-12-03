@@ -81,7 +81,7 @@ const Login = ({ onLogin }) => {
                 damping: 15,
                 delay: 0.2
               }}
-              className="w-20 h-20 bg-gradient-to-br from-primary-500 to-accent-500 rounded-3xl flex items-center justify-center text-white shadow-lg shadow-primary/40 mx-auto mb-6 rotate-12 hover:rotate-0 transition-all duration-300"
+              className="w-20 h-20 bg-primary-600 rounded-3xl flex items-center justify-center text-white shadow-lg shadow-primary/40 mx-auto mb-6 rotate-12 hover:rotate-0 transition-all duration-300"
             >
               <PawPrint className="w-10 h-10" strokeWidth={2.5} />
             </motion.div>
@@ -176,7 +176,7 @@ const Login = ({ onLogin }) => {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-primary-500 to-accent-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/40 hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Signing In...' : 'Sign In'}
             </motion.button>
@@ -208,7 +208,7 @@ const Login = ({ onLogin }) => {
           >
             <Link
               to="/register"
-              className="inline-flex items-center gap-2 text-primary-600 font-bold hover:text-primary-700 transition-colors group"
+              className="inline-flex items-center gap-2 text-primary-700 font-bold hover:text-primary-800 transition-colors group"
             >
               Create an account
               <span className="group-hover:translate-x-1 transition-transform">→</span>

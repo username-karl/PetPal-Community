@@ -5,7 +5,6 @@ import { useAuth } from './AuthContext';
 import { DataProvider } from './context/DataContext';
 import AddPetModal from './components/AddPetModal';
 import { api } from './api';
-import ClickSpark from './components/ClickSpark';
 
 // Pages
 import Login from './pages/Login';
@@ -54,16 +53,9 @@ const App = () => {
   const isAuthenticated = !!user;
 
   return (
-    <ClickSpark
-      sparkColor='#000'
-      sparkSize={10}
-      sparkRadius={15}
-      sparkCount={8}
-      duration={400}
-    >
-      <DataProvider>
-        <Routes>
-          {/* Public Routes */}
+    <DataProvider>
+      <Routes>
+        {/* Public Routes */}
           <Route
             path="/login"
             element={
@@ -130,7 +122,6 @@ const App = () => {
           />
         </Routes>
       </DataProvider>
-    </ClickSpark>
   );
 };
 
