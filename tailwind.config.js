@@ -6,44 +6,44 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                // Warm primary coral/salmon
+                // Friendly Indigo Primary (Trust & Community)
                 primary: {
-                    50: '#FFF4F0',
-                    100: '#FFE8E0',
-                    200: '#FFD1C1',
-                    300: '#FFB9A2',
-                    400: '#FF9873',
-                    500: '#FF7B54', // Main primary
-                    600: '#E6633D',
-                    700: '#CC4C2A',
-                    800: '#B3361B',
-                    900: '#99210F',
+                    50: '#EEF2FF',
+                    100: '#E0E7FF',
+                    200: '#C7D2FE',
+                    300: '#A5B4FC',
+                    400: '#818CF8',
+                    500: '#6366F1', // Main primary - Indigo
+                    600: '#4F46E5',
+                    700: '#4338CA',
+                    800: '#3730A3',
+                    900: '#312E81',
                 },
-                // Rich teal secondary
+                // Playful Violet Secondary
                 secondary: {
-                    50: '#F0FDFA',
-                    100: '#CCFBF1',
-                    200: '#99F6E4',
-                    300: '#5EEAD4',
-                    400: '#2DD4BF',
-                    500: '#14B8A6', // Main secondary
-                    600: '#0D9488',
-                    700: '#0F766E',
-                    800: '#115E59',
-                    900: '#134E4A',
+                    50: '#F5F3FF',
+                    100: '#EDE9FE',
+                    200: '#DDD6FE',
+                    300: '#C4B5FD',
+                    400: '#A78BFA',
+                    500: '#8B5CF6', // Main secondary - Violet
+                    600: '#7C3AED',
+                    700: '#6D28D9',
+                    800: '#5B21B6',
+                    900: '#4C1D95',
                 },
-                // Soft peach accent
+                // Warm Pink Accent (Love/Care)
                 accent: {
-                    50: '#FFF9F0',
-                    100: '#FFF2E0',
-                    200: '#FFE4C1',
-                    300: '#FFD6A2',
-                    400: '#FFC883',
-                    500: '#FFB26B', // Main accent
-                    600: '#FF9A42',
-                    700: '#FF8219',
-                    800: '#E66A00',
-                    900: '#CC5E00',
+                    50: '#FDF2F8',
+                    100: '#FCE7F3',
+                    200: '#FBCFE8',
+                    300: '#F9A8D4',
+                    400: '#F472B6',
+                    500: '#EC4899', // Main accent - Pink
+                    600: '#DB2777',
+                    700: '#BE185D',
+                    800: '#9D174D',
+                    900: '#831843',
                 },
                 // Deep purple for depth
                 purple: {

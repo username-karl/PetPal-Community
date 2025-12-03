@@ -60,9 +60,9 @@ const Layout = ({
         menuButtonColor="#1f2937"
         openMenuButtonColor="#fff"
         changeMenuColorOnOpen={true}
-        colors={['#1f2937', '#4f46e5']}
+        colors={['#312E81', '#4F46E5']}
         logoUrl={logo}
-        accentColor="#ff6b6b"
+        accentColor="#EC4899"
         onMenuOpen={() => setIsMenuOpen(true)}
         onMenuClose={() => setIsMenuOpen(false)}
         isOpen={isMenuOpen}

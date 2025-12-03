@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { Search, Filter, Camera, Send, Trash2, Heart, MessageSquare, X, Sparkles, User as UserIcon } from 'lucide-react';
 import { useData } from '../context/DataContext';
+import { Button } from '../components/ui/stateful-button';
 
 const Community = ({ user, onToggleRole }) => {
   const { posts, createPost, deletePost, deleteComment } = useData();
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
   const [newPostCategory, setNewPostCategory] = useState('Advice');
-  const [isPosting, setIsPosting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsPosting(true);
     await createPost({
       title: newPostTitle,
       content: newPostContent,
@@ -20,7 +19,6 @@ const Community = ({ user, onToggleRole }) => {
     });
     setNewPostTitle('');
     setNewPostContent('');
-    setIsPosting(false);
   };
 
   return (
@@ -79,14 +77,10 @@ const Community = ({ user, onToggleRole }) => {
                   <option value="Adoption">Adoption</option>
                 </select>
               </div>
-              <button
-                type="submit"
-                disabled={isPosting}
-                className="bg-gradient-to-r from-primary-500 to-accent-500 text-white px-8 py-2.5 rounded-xl font-bold hover:shadow-xl hover:shadow-primary/40 transition disabled:opacity-50 shadow-lg shadow-primary/30 flex items-center gap-2"
-              >
-                {isPosting ? 'Publishing...' : 'Post'}
-                {!isPosting && <Send className="w-4 h-4" />}
-              </button>
+              <Button type="submit" onClick={handleSubmit}>
+                Post
+                <Send className="w-4 h-4" />
+              </Button>
             </div>
           </form>
         </div>
