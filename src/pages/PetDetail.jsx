@@ -10,7 +10,9 @@ const PetDetail = () => {
   const navigate = useNavigate();
   const { pets, reminders, updatePet, deletePet, addReminder, toggleReminder, deleteReminder } = useData();
 
-  const pet = pets.find(p => p.id === id);
+  // Convert ID from URL param (string) to number for comparison
+  const petId = parseInt(id, 10);
+  const pet = pets.find(p => p.id === petId);
 
   // Define all hooks at the top level
   const [isAddingReminder, setIsAddingReminder] = useState(false);

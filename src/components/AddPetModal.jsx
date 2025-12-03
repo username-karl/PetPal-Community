@@ -9,7 +9,7 @@ const AddPetModal = ({ onClose }) => {
   const { addPet } = useData();
   const [formData, setFormData] = useState({
     name: '',
-    type: PetType.Dog,
+    type: PetType.DOG,
     breed: '',
     age: '',
     weight: '',
