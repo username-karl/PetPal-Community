@@ -2,8 +2,8 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import StaggeredMenu from './StaggeredMenu';
-import { useAuth } from '../AuthContext'; // Adjusted import path since we are in components/
-import logo from '../logo.svg'; // Adjusted import path
+import { useAuth } from '../AuthContext';
+import logo from '../logo.svg';
 
 const Layout = ({
   children,
@@ -15,7 +15,16 @@ const Layout = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth(); // Ensure we have logout from context if not passed as prop
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    } else {
+      logout();
+    }
+    navigate('/login');
+  };
 
   const menuItems = [
     { label: 'Dashboard', ariaLabel: 'Go to dashboard', link: '/' },
@@ -29,17 +38,7 @@ const Layout = ({
 
   // Add Profile and Logout to the menu
   menuItems.push({ label: 'Profile', ariaLabel: 'View profile', link: '/profile' });
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
-  menuItems.push({
-    label: 'Logout',
-    ariaLabel: 'Logout from application',
-    action: handleLogout
-  });
+  menuItems.push({ label: 'Logout', ariaLabel: 'Logout from application', action: handleLogout });
 
   const socialItems = [
     { label: 'Twitter', link: 'https://twitter.com' },
@@ -83,7 +82,6 @@ const Layout = ({
           <div className="flex items-center gap-2 font-bold text-xl ml-14">
             <span className="tracking-tight text-slate-700">PetPal</span>
           </div>
-          {/* The menu button will be fixed on top right, so we don't need anything there */}
         </header>
 
         <div className="p-4 md:p-8 pb-24 max-w-6xl mx-auto">
