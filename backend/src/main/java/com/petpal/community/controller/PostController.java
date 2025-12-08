@@ -44,6 +44,31 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post updatedPost,
+            @RequestParam Long userId) {
+        Post existingPost = postService.getPostById(id);
+        if (existingPost == null) {
+            return ResponseEntity.notFound().build();
+        }
+        // Verify ownership
+        if (existingPost.getAuthor() == null || !existingPost.getAuthor().getId().equals(userId)) {
+            return ResponseEntity.status(403).build();
+        }
+        // Update fields
+        existingPost.setTitle(updatedPost.getTitle());
+        existingPost.setContent(updatedPost.getContent());
+        if (updatedPost.getCategory() != null) {
+            existingPost.setCategory(updatedPost.getCategory());
+        }
+        return ResponseEntity.ok(postService.savePost(existingPost));
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<Post> getPostsByUser(@PathVariable Long userId) {
+        return postService.getPostsByUserId(userId);
+    }
+
     @Transactional
     @PutMapping("/{id}/like")
     public ResponseEntity<Post> toggleLikePost(@PathVariable Long id, @RequestParam Long userId) {

@@ -77,6 +77,18 @@ export const api = {
         });
         return response.ok;
     },
+    updatePost: async (id, data, userId) => {
+        const response = await fetch(`${API_URL}/posts/${id}?userId=${userId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        return handleResponse(response);
+    },
+    getUserPosts: async (userId) => {
+        const response = await fetch(`${API_URL}/posts/user/${userId}`);
+        return handleResponse(response);
+    },
     likePost: async (id, userId) => {
         const response = await fetch(`${API_URL}/posts/${id}/like?userId=${userId}`, {
             method: 'PUT',
