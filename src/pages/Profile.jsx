@@ -10,7 +10,9 @@ import {
     Mail,
     PawPrint,
     Plus,
-    Edit3
+    Edit3,
+    MessageSquare,
+    Heart
 } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../AuthContext';
@@ -18,7 +20,10 @@ import { useAuth } from '../AuthContext';
 const Profile = ({ user, onUpdateUser }) => {
     const navigate = useNavigate();
     const { logout } = useAuth();
-    const { pets } = useData();
+    const { pets, posts } = useData();
+
+    // Filter posts by current user
+    const myPosts = posts.filter(post => post.author?.id === user?.id);
 
     // Edit Profile State
     const [isEditing, setIsEditing] = useState(false);
@@ -161,6 +166,48 @@ const Profile = ({ user, onUpdateUser }) => {
                         <Plus className="w-5 h-5" />
                     </button>
                 </div>
+            </div>
+
+            {/* My Posts Section */}
+            <div className="mb-8">
+                <div className="flex items-center justify-between mb-4 px-2">
+                    <h3 className="font-bold text-slate-900">My Posts</h3>
+                    <button onClick={() => navigate('/community')} className="text-xs font-bold text-indigo-600 hover:text-indigo-700">View All</button>
+                </div>
+                {myPosts.length > 0 ? (
+                    <div className="space-y-3">
+                        {myPosts.slice(0, 3).map(post => (
+                            <div
+                                key={post.id}
+                                onClick={() => navigate('/community')}
+                                className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer"
+                            >
+                                <h4 className="font-semibold text-sm text-slate-900 truncate mb-1">{post.title}</h4>
+                                <p className="text-xs text-slate-500 line-clamp-2 mb-2">{post.content}</p>
+                                <div className="flex items-center gap-3 text-xs text-slate-400">
+                                    <span className="flex items-center gap-1">
+                                        <Heart className="w-3 h-3" /> {post.likes || 0}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                        <MessageSquare className="w-3 h-3" /> {post.comments?.length || 0}
+                                    </span>
+                                    <span>{new Date(post.timestamp).toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="bg-slate-50 p-6 rounded-2xl border border-dashed border-slate-300 text-center">
+                        <MessageSquare className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+                        <p className="text-sm text-slate-500">No posts yet</p>
+                        <button
+                            onClick={() => navigate('/community')}
+                            className="text-xs font-bold text-indigo-600 hover:text-indigo-700 mt-2"
+                        >
+                            Create your first post
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Menu Actions */}

@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Search, Image, Paperclip, MoreHorizontal, Heart, MessageCircle, X } from 'lucide-react';
+import { Search, Image, Paperclip, MoreHorizontal, Heart, MessageCircle, X, Edit3, Check, Trash2 } from 'lucide-react';
 import { useData } from '../context/DataContext';
 
 const Community = ({ user, onToggleRole }) => {
-  const { posts, createPost, deletePost, deleteComment, likePost, addComment } = useData();
+  const { posts, createPost, deletePost, updatePost, deleteComment, likePost, addComment } = useData();
   const [newPostContent, setNewPostContent] = useState('');
   const [newPostTitle, setNewPostTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [editingPostId, setEditingPostId] = useState(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
 
   const handleSubmit = async () => {
     if (!newPostContent.trim() || !newPostTitle.trim()) return;
@@ -24,6 +27,35 @@ const Community = ({ user, onToggleRole }) => {
     setNewPostContent('');
     setNewPostTitle('');
     setIsLoading(false);
+  };
+
+  const handleStartEdit = (post) => {
+    setEditingPostId(post.id);
+    setEditTitle(post.title || '');
+    setEditContent(post.content || '');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPostId(null);
+    setEditTitle('');
+    setEditContent('');
+  };
+
+  const handleSaveEdit = async (postId) => {
+    if (!editTitle.trim() || !editContent.trim()) return;
+
+    try {
+      await updatePost(postId, { title: editTitle, content: editContent });
+      setEditingPostId(null);
+      setEditTitle('');
+      setEditContent('');
+    } catch (err) {
+      console.error('Failed to update post:', err);
+    }
+  };
+
+  const isAuthor = (post) => {
+    return post.author?.id === user?.id;
   };
 
   return (
@@ -98,25 +130,74 @@ const Community = ({ user, onToggleRole }) => {
                     </p>
                   </div>
                 </div>
-                {user.role === 'Moderator' ? (
-                  <button
-                    onClick={() => deletePost(post.id)}
-                    className="text-slate-400 hover:text-red-500 transition-colors p-1"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                ) : (
-                  <button className="text-slate-400 hover:text-slate-600">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </button>
-                )}
+
+                {/* Action buttons */}
+                <div className="flex items-center gap-1">
+                  {isAuthor(post) && editingPostId !== post.id && (
+                    <button
+                      onClick={() => handleStartEdit(post)}
+                      className="text-slate-400 hover:text-blue-500 transition-colors p-1.5 hover:bg-blue-50 rounded-lg"
+                      title="Edit post"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                    </button>
+                  )}
+                  {(isAuthor(post) || user.role === 'Moderator') && (
+                    <button
+                      onClick={() => deletePost(post.id)}
+                      className="text-slate-400 hover:text-red-500 transition-colors p-1.5 hover:bg-red-50 rounded-lg"
+                      title="Delete post"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                  {!isAuthor(post) && user.role !== 'Moderator' && (
+                    <button className="text-slate-400 hover:text-slate-600 p-1">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </div>
 
-              {post.title && <h3 className="text-base font-semibold text-slate-900 mb-2">{post.title}</h3>}
-
-              <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                {post.content}
-              </p>
+              {/* Post content - editable or static */}
+              {editingPostId === post.id ? (
+                <div className="space-y-3 mb-4">
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-base font-semibold focus:ring-2 focus:ring-blue-200 focus:border-blue-300 outline-none"
+                  />
+                  <textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-300 outline-none resize-none"
+                    rows={3}
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={handleCancelEdit}
+                      className="px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => handleSaveEdit(post.id)}
+                      disabled={!editTitle.trim() || !editContent.trim()}
+                      className="px-3 py-1.5 text-sm bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-1"
+                    >
+                      <Check className="w-3.5 h-3.5" /> Save
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {post.title && <h3 className="text-base font-semibold text-slate-900 mb-2">{post.title}</h3>}
+                  <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                    {post.content}
+                  </p>
+                </>
+              )}
 
               <div className="flex items-center gap-4 border-t border-slate-100 pt-3">
                 <button
@@ -184,17 +265,6 @@ const Community = ({ user, onToggleRole }) => {
                 </span>
               ))}
             </div>
-          </div>
-
-          {/* Mod Toggle - Kept for functionality even if not in visual mockup */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <h3 className="text-sm font-semibold text-slate-900 mb-2">View As</h3>
-            <button
-              onClick={onToggleRole}
-              className="w-full py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-medium text-slate-700 transition-colors"
-            >
-              Switch to {user.role === 'Owner' ? 'Moderator' : 'Owner'} Mode
-            </button>
           </div>
         </div>
       </div>

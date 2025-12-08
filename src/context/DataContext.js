@@ -114,6 +114,17 @@ export const DataProvider = ({ children }) => {
         }
     };
 
+    const updatePost = async (id, data) => {
+        try {
+            const updatedPost = await api.updatePost(id, data, user.id);
+            setPosts(posts.map(p => p.id === id ? updatedPost : p));
+            return updatedPost;
+        } catch (err) {
+            console.error("Error updating post:", err);
+            throw err;
+        }
+    };
+
     const deleteComment = async (postId, commentId) => {
         // Not implemented on backend yet, preserving API for now
         console.log('deleteComment', postId, commentId);
@@ -195,7 +206,7 @@ export const DataProvider = ({ children }) => {
 
     return (
         <DataContext.Provider value={{
-            posts, createPost, deletePost, deleteComment, likePost, addComment,
+            posts, createPost, deletePost, updatePost, deleteComment, likePost, addComment,
             pets, addPet, updatePet, deletePet, refreshPets,
             reminders, addReminder, toggleReminder, deleteReminder,
             loading, error,
