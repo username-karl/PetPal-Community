@@ -1,319 +1,249 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Calendar, Clock, MoreHorizontal, PawPrint, TrendingUp, Plus } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { StatusBadge } from '../components/Shared';
+import { isToday } from 'date-fns';
+import {
+  CheckCircle2,
+  ListTodo,
+  Scale,
+  Pill,
+  Calendar,
+  Edit2,
+  PawPrint
+} from 'lucide-react';
 import { useData } from '../context/DataContext';
-import { PET_CARE_TIPS } from '../constants';
-import Card from '../components/Card';
-import AddReminderModal from '../components/AddReminderModal';
-import SkeletonLoader from '../components/SkeletonLoader';
-
-// Utility Confetti functions
-const random = (min, max) => Math.random() * (max - min) + min;
-
-const Confetti = () => {
-  const confettiColors = ['#818cf8', '#c084fc', '#fb7185', '#fdba74', '#67e8f9'];
-  const particles = Array.from({ length: 50 }, (_, i) => ({
-    id: i,
-    x: random(-10, 110),
-    rotation: random(0, 360),
-    color: confettiColors[Math.floor(Math.random() * confettiColors.length)]
-  }));
-
-  return (
-    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
-      {particles.map((particle) => (
-        <motion.div
-          key={particle.id}
-          initial={{ y: -20, x: `${particle.x}%`, opacity: 1, rotate: 0 }}
-          animate={{
-            y: window.innerHeight + 20,
-            rotate: particle.rotation,
-            opacity: 0
-          }}
-          transition={{ duration: random(2, 3), ease: 'easeIn' }}
-          className="absolute w-3 h-3 rounded-sm"
-          style={{ backgroundColor: particle.color }}
-        />
-      ))}
-    </div>
-  );
-};
 
 const Dashboard = ({ user }) => {
   const navigate = useNavigate();
-  const { pets, reminders, toggleReminder } = useData();
-  const [showAddReminderModal, setShowAddReminderModal] = useState(false);
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [randomTip, setRandomTip] = useState('');
+  const { pets, reminders, activePetId } = useData();
+  // Get active pet from context, fallback to first pet
+  const activePet = pets.find(p => p.id === activePetId) || (pets.length > 0 ? pets[0] : null);
 
-  const upcomingReminders = reminders.filter(r => !r.completed);
-  const completedRemindersCount = reminders.filter(r => r.completed).length;
+  const priorityReminders = reminders
+    .filter(r => !r.completed && r.type === 'Medical')
+    .slice(0, 2);
 
-  // Simulate loading
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
-  }, []);
+  const upcomingReminders = reminders
+    .filter(r => !r.completed)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .slice(0, 2);
 
-  // Set random tip on mount
-  useEffect(() => {
-    const tip = PET_CARE_TIPS[Math.floor(Math.random() * PET_CARE_TIPS.length)];
-    setRandomTip(tip);
-  }, []);
-
-  // Check if all tasks completed for celebration
-  useEffect(() => {
-    if (reminders.length > 0 && upcomingReminders.length === 0 && completedRemindersCount > 0) {
-      setShowCelebration(true);
-      const timer = setTimeout(() => setShowCelebration(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [upcomingReminders.length, completedRemindersCount, reminders.length]);
-
-  // Get time-based greeting
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
-  };
-
-  // Safe user name extraction
-  const firstName = user?.name?.split(' ')[0] || 'Friend';
-
-  // Check if date is overdue (strictly before today)
-  const isOverdue = (dateString) => {
-    const reminderDate = new Date(dateString);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    reminderDate.setHours(0, 0, 0, 0);
-    return reminderDate.getTime() < today.getTime();
-  };
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
-
-  if (isLoading) {
-    return <SkeletonLoader />;
-  }
+  const completedCount = reminders.filter(r => r.completed).length;
+  const pendingCount = reminders.filter(r => !r.completed).length;
 
   return (
-    <>
-      {showCelebration && <Confetti />}
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="space-y-8"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Welcome Card */}
-          <motion.div
-            variants={item}
-            className="relative overflow-hidden bg-gradient-to-r from-violet-600 to-indigo-600 rounded-3xl p-8 text-white shadow-soft-lg col-span-1 md:col-span-2 flex flex-col justify-between min-h-[220px]"
-          >
-            <motion.div
-              animate={{ scale: [1, 1.2, 1], rotate: [0, 10, 0] }}
-              transition={{ duration: 20, repeat: Infinity }}
-              className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl"
-            />
-            <motion.div
-              animate={{ scale: [1, 1.5, 1], rotate: [0, -10, 0] }}
-              transition={{ duration: 25, repeat: Infinity }}
-              className="absolute bottom-0 left-0 w-48 h-48 bg-purple-400/20 rounded-full -ml-10 -mb-10 blur-2xl"
-            />
+    <div className="fade-in space-y-10">
+      {/* Dashboard Header */}
+      <div>
+        <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Today's Overview</h2>
+        <p className="text-sm text-slate-500 mt-1">Welcome back, {user?.name.split(' ')[0]}. Here's what's happening with your pets.</p>
+      </div>
 
-            <div className="relative z-10">
-              <h2 className="text-3xl font-bold mb-2 tracking-tight drop-shadow-md">
-                {getGreeting()}, {firstName}! 👋
-              </h2>
-              <p className="text-white text-lg font-medium max-w-md drop-shadow-sm">
-                You have {upcomingReminders.length} upcoming tasks. Let's keep your companions happy and healthy.
+      {/* Welcome Banner (Replaces Mock Event) */}
+      <section>
+        <div className="relative bg-slate-900 rounded-xl p-8 overflow-hidden group shadow-lg shadow-slate-200">
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="max-w-lg">
+              <span className="inline-flex items-center rounded-full bg-slate-800 px-2.5 py-0.5 text-xs font-medium text-slate-300 mb-4 border border-slate-700">
+                <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Pet Care Dashboard
+              </span>
+              <h3 className="text-2xl md:text-3xl font-semibold text-white tracking-tight mb-2">
+                Manage Your Pet's Life
+              </h3>
+              <p className="text-slate-400 text-sm md:text-base mb-6 max-w-sm leading-relaxed">
+                Track reminders, health stats, and community tips all in one place.
               </p>
-            </div>
-
-            <div className="relative z-10 flex gap-3 mt-6">
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
+              <button
                 onClick={() => navigate('/pets')}
-                className="bg-white text-indigo-600 hover:bg-indigo-50 transition px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm"
+                className="bg-white text-slate-900 text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-2"
               >
-                Manage Pets
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/community')}
-                className="bg-white/30 hover:bg-white/40 backdrop-blur-sm text-white transition px-5 py-2.5 rounded-xl text-sm font-bold border border-white/40"
-              >
-                Community
-              </motion.button>
+                View My Pets <PawPrint className="w-4 h-4" />
+              </button>
             </div>
-          </motion.div>
+          </div>
+        </div>
+      </section>
 
-          {/* Quick Stats */}
-          <motion.div variants={item} className="h-full">
-            <Card className="h-full flex flex-col justify-between border-0 shadow-soft-lg bg-gradient-to-br from-white to-primary-50/30">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="text-slate-500 font-bold text-xs uppercase tracking-wider">Total Pets</p>
-                  <p className="text-4xl font-bold text-slate-900 mt-1">{pets.length}</p>
-                </div>
-                <div className="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center text-primary-600">
-                  <PawPrint className="w-6 h-6" />
-                </div>
-              </div>
-              <div className="flex items-center justify-between border-t border-slate-100 pt-4">
-                <div>
-                  <p className="text-slate-500 font-bold text-xs uppercase tracking-wider">Tasks Done</p>
-                  <p className="text-2xl font-bold text-emerald-600 mt-1">{completedRemindersCount}</p>
-                </div>
-                <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl flex items-center justify-center text-emerald-600">
-                  <CheckCircle className="w-5 h-5" />
-                </div>
-              </div>
-            </Card>
-          </motion.div>
+      {/* Stats Grid */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="group bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 hover:shadow-sm transition-all">
+          <div className="flex justify-between items-start mb-4">
+            <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wider">Pending Tasks</h4>
+            <ListTodo className="w-4 h-4 text-slate-400" />
+          </div>
+          <p className="text-2xl font-semibold text-slate-900 tracking-tight">{pendingCount}</p>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-xs font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
+              {reminders.filter(r => !r.completed && r.type === 'Medical').length} High Priority
+            </span>
+          </div>
         </div>
 
-        {/* Reminders Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-5">
-            <motion.div variants={item} className="flex items-center gap-4">
-              <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary-600" />
-                Upcoming Schedule
-              </h3>
-              <span className="text-xs font-bold text-primary-600 bg-primary-100 px-3 py-1.5 rounded-full">
-                {upcomingReminders.length} Pending
-              </span>
-              <button
-                onClick={() => setShowAddReminderModal(true)}
-                className="ml-auto p-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-colors shadow-sm"
-                title="Add new reminder"
-              >
-                <Plus className="w-5 h-5" />
-              </button>
-            </motion.div>
+        <div className="group bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 hover:shadow-sm transition-all">
+          <div className="flex justify-between items-start mb-4">
+            <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wider">Completed</h4>
+            <CheckCircle2 className="w-4 h-4 text-slate-400" />
+          </div>
+          <p className="text-2xl font-semibold text-slate-900 tracking-tight">{completedCount}</p>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-xs font-medium text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">Total Tasks</span>
+          </div>
+        </div>
 
-            {upcomingReminders.length === 0 ? (
-              <motion.div variants={item} className="p-12 bg-white rounded-3xl border border-dashed border-slate-200 text-center text-slate-400 shadow-soft">
-                <CheckCircle className="w-12 h-12 mx-auto mb-4 text-emerald-500/20" />
-                <p className="font-medium mb-4">All caught up! No upcoming tasks.</p>
-                <button
-                  onClick={() => setShowAddReminderModal(true)}
-                  className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition-colors"
-                >
-                  Schedule New Task
-                </button>
-              </motion.div>
+        <div className="group bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 hover:shadow-sm transition-all">
+          <div className="flex justify-between items-start mb-4">
+            <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wider">Next Up</h4>
+            <Calendar className="w-4 h-4 text-slate-400" />
+          </div>
+          {(() => {
+            const nextReminder = reminders
+              .filter(r => !r.completed && new Date(r.date) >= new Date().setHours(0, 0, 0, 0))
+              .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+
+            return nextReminder ? (
+              <>
+                <p className="text-lg font-semibold text-slate-900 tracking-tight truncate" title={nextReminder.title}>
+                  {nextReminder.title}
+                </p>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className={`text-xs font-medium px-1.5 py-0.5 rounded truncate max-w-[150px] ${nextReminder.type === 'Medical' ? 'text-red-600 bg-red-50' : 'text-blue-600 bg-blue-50'
+                    }`}>
+                    {new Date(nextReminder.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} • {nextReminder.type}
+                  </span>
+                </div>
+              </>
             ) : (
-              <motion.div variants={item} className="bg-white rounded-3xl border border-slate-100 shadow-soft-lg overflow-hidden">
-                {upcomingReminders.map((reminder) => {
-                  const pet = pets.find(p => p.id === reminder.petId);
-                  const overdueStatus = isOverdue(reminder.date);
+              <>
+                <p className="text-xl font-semibold text-slate-400 tracking-tight">No tasks</p>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-xs font-medium text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded">
+                    All caught up!
+                  </span>
+                </div>
+              </>
+            );
+          })()}
+        </div>
+      </section>
 
-                  return (
-                    <motion.div
-                      key={reminder.id}
-                      whileHover={{ backgroundColor: "rgba(255, 251, 245, 1)" }}
-                      className="p-5 flex items-center justify-between border-b border-slate-50 last:border-0 group transition-colors"
-                    >
-                      <div className="flex items-center gap-5">
-                        <button
-                          onClick={() => toggleReminder(reminder.id)}
-                          className="w-6 h-6 rounded-full border-2 border-slate-300 hover:border-primary-600 flex items-center justify-center text-white hover:bg-primary-600 transition-all"
-                        >
-                        </button>
-                        <div>
-                          <p className={`font-bold text-base ${overdueStatus ? 'text-rose-600' : 'text-slate-900'}`}>
-                            {reminder.title}
-                            {overdueStatus && <span className="ml-2 text-[10px] bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full uppercase tracking-wide">Overdue</span>}
-                          </p>
-                          <div className="flex items-center gap-3 text-xs font-medium text-slate-500 mt-1.5">
-                            <div className="flex items-center gap-1.5 bg-slate-100 px-2 py-0.5 rounded-md">
-                              <img src={pet?.imageUrl} alt="" className="w-4 h-4 rounded-full object-cover" />
-                              <span>{pet?.name}</span>
-                            </div>
-                            <span className="text-slate-300">•</span>
-                            <span className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {new Date(reminder.date).toLocaleDateString()}
-                            </span>
-                            <span className="text-slate-300">•</span>
-                            <StatusBadge type={reminder.type} />
-                          </div>
-                        </div>
-                      </div>
-                      <button className="text-slate-300 hover:text-primary-600 p-2 rounded-lg hover:bg-primary-50 transition opacity-0 group-hover:opacity-100">
-                        <MoreHorizontal className="w-5 h-5" />
-                      </button>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
+      {/* Bottom Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Upcoming Reminders List */}
+        <div className="flex flex-col">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-semibold text-slate-900">Priority Reminders</h3>
+            <button
+              onClick={() => navigate('/reminders')}
+              className="text-xs font-medium text-slate-500 hover:text-slate-900"
+            >
+              View All
+            </button>
+          </div>
+          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+            {priorityReminders.length > 0 ? (
+              priorityReminders.map((reminder) => (
+                <div key={reminder.id} className="flex items-center gap-4 p-4 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer">
+                  <div className="bg-amber-50 w-10 h-10 rounded-lg flex items-center justify-center text-amber-600 border border-amber-100">
+                    <Pill className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-slate-900">{reminder.title}</h4>
+                    <p className="text-xs text-slate-500">{reminder.type} • {new Date(reminder.date).toLocaleDateString()}</p>
+                  </div>
+                  <div className="w-5 h-5 rounded-full border-2 border-slate-200 hover:border-slate-900 hover:bg-slate-900 cursor-pointer transition-all"></div>
+                </div>
+              ))
+            ) : upcomingReminders.length > 0 ? (
+              upcomingReminders.map((reminder) => (
+                <div key={reminder.id} className="flex items-center gap-4 p-4 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors cursor-pointer">
+                  <div className="bg-blue-50 w-10 h-10 rounded-lg flex items-center justify-center text-blue-600 border border-blue-100">
+                    <Calendar className="w-4 h-4" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-slate-900">{reminder.title}</h4>
+                    <p className="text-xs text-slate-500">{reminder.type} • {new Date(reminder.date).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-slate-500 text-sm">
+                No upcoming priority reminders.
+              </div>
             )}
           </div>
-
-          {/* Activity Sidebar */}
-          <div className="space-y-6">
-            <motion.div variants={item} className="bg-white rounded-3xl p-6 shadow-md">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-indigo-600" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg text-slate-900">Great Progress!</h3>
-                  <p className="text-slate-500 text-sm">Keep it up!</p>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-500 text-sm font-medium">This Week</span>
-                  <span className="font-bold text-xl text-slate-900">{completedRemindersCount}</span>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${Math.min((completedRemindersCount / (reminders.length || 1)) * 100, 100)}%` }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                    className="bg-indigo-600 h-full rounded-full"
-                  />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Quick Tips */}
-            <motion.div variants={item} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-soft">
-              <h3 className="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wide text-primary-600">💡 Pet Care Tip</h3>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                {randomTip}
-              </p>
-            </motion.div>
-          </div>
         </div>
-      </motion.div>
 
-      {showAddReminderModal && (
-        <AddReminderModal onClose={() => setShowAddReminderModal(false)} />
-      )}
-    </>
+        {/* Pet Profile */}
+        <div className="flex flex-col">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-semibold text-slate-900">Active Pet</h3>
+          </div>
+          {activePet ? (
+            <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+              <div className="flex gap-5 items-center">
+                <div className="w-16 h-16 rounded-full overflow-hidden bg-slate-100 ring-2 ring-slate-50">
+                  <img src={activePet.imageUrl} alt={activePet.name} className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-lg font-semibold text-slate-900">{activePet.name}</h4>
+                  <p className="text-sm text-slate-500">{activePet.breed || activePet.type} • {activePet.age} Yrs</p>
+                </div>
+                <button
+                  onClick={() => navigate(`/pets/${activePet.id}`)}
+                  className="p-2 hover:bg-slate-50 rounded-full border border-slate-200 text-slate-400 hover:text-slate-900 transition-colors"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="mt-6 space-y-3">
+                <div>
+                  <div className="flex justify-between text-xs font-medium text-slate-500 mb-1.5">
+                    <span>Task Completion (Today)</span>
+                    <span className="text-slate-900">
+                      {(() => {
+                        const petReminders = reminders.filter(r => r.petId === activePet.id && isToday(new Date(r.date)));
+                        const completed = petReminders.filter(r => r.completed).length;
+                        const total = petReminders.length;
+                        return total > 0 ? Math.round((completed / total) * 100) : 0;
+                      })()}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                    <div
+                      className="bg-slate-900 h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${(() => {
+                          const petReminders = reminders.filter(r => r.petId === activePet.id && isToday(new Date(r.date)));
+                          const completed = petReminders.filter(r => r.completed).length;
+                          const total = petReminders.length;
+                          return total > 0 ? (completed / total) * 100 : 0;
+                        })()}%`
+                      }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-2 text-center">
+                    {(() => {
+                      const petReminders = reminders.filter(r => r.petId === activePet.id && isToday(new Date(r.date)));
+                      const completed = petReminders.filter(r => r.completed).length;
+                      return `${completed}/${petReminders.length} tasks done today`;
+                    })()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white border border-slate-200 rounded-xl p-8 text-center shadow-sm">
+              <p className="text-slate-500 mb-4">No pets added yet.</p>
+              <button
+                onClick={() => navigate('/pets')}
+                className="text-sm font-medium text-blue-600 hover:underline"
+              >
+                Add your first pet
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 

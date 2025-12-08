@@ -13,6 +13,7 @@ export const DataProvider = ({ children }) => {
     const [reminders, setReminders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [activePetId, setActivePetId] = useState(null);
 
     // Function to fetch pets - can be called manually
     const refreshPets = useCallback(async () => {
@@ -66,7 +67,15 @@ export const DataProvider = ({ children }) => {
         };
 
         fetchData();
+        fetchData();
     }, [user, refreshPets]);
+
+    // Set default active pet
+    useEffect(() => {
+        if (pets.length > 0 && !activePetId) {
+            setActivePetId(pets[0].id);
+        }
+    }, [pets, activePetId]);
 
     const createPost = async (post) => {
         try {
@@ -119,9 +128,9 @@ export const DataProvider = ({ children }) => {
         }
     };
 
-    const addReminder = async (petId, title, date, type) => {
+    const addReminder = async (petId, title, date, type, recurrence = 'None') => {
         try {
-            const newReminder = await api.createReminder({ title, date, type }, petId);
+            const newReminder = await api.createReminder({ title, date, type, recurrence }, petId);
             setReminders(prev => [...prev, newReminder]);
         } catch (err) {
             console.error("Error adding reminder:", err);
@@ -151,7 +160,8 @@ export const DataProvider = ({ children }) => {
             posts, createPost, deletePost, deleteComment,
             pets, addPet, updatePet, deletePet, refreshPets,
             reminders, addReminder, toggleReminder, deleteReminder,
-            loading, error
+            loading, error,
+            activePetId, setActivePetId
         }}>
             {children}
         </DataContext.Provider>

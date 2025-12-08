@@ -47,9 +47,9 @@ const Stepper = ({
                             <div className="flex flex-col items-center">
                                 <div
                                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all duration-300 ${index < currentStep
-                                        ? 'bg-brand-600 text-white shadow-lg shadow-brand-500/30'
+                                        ? 'bg-slate-900 text-white shadow-lg shadow-slate-200'
                                         : index === currentStep
-                                            ? 'bg-brand-600 text-white scale-110 shadow-xl shadow-brand-500/40'
+                                            ? 'bg-slate-900 text-white scale-110 shadow-xl shadow-slate-300'
                                             : 'bg-slate-100 text-slate-400'
                                         }`}
                                 >
@@ -60,7 +60,7 @@ const Stepper = ({
                                     )}
                                 </div>
                                 <span
-                                    className={`mt-2 text-xs font-semibold ${index <= currentStep ? 'text-brand-600' : 'text-slate-400'
+                                    className={`mt-2 text-xs font-semibold ${index <= currentStep ? 'text-slate-900' : 'text-slate-400'
                                         }`}
                                 >
                                     Step {index + 1}
@@ -68,7 +68,7 @@ const Stepper = ({
                             </div>
                             {index < totalSteps - 1 && (
                                 <div
-                                    className={`flex-1 h-1 mx-2 rounded-full transition-all duration-500 ${index < currentStep ? 'bg-brand-600' : 'bg-slate-100'
+                                    className={`flex-1 h-1 mx-2 rounded-full transition-all duration-500 ${index < currentStep ? 'bg-slate-900' : 'bg-slate-100'
                                         }`}
                                 />
                             )}
@@ -100,7 +100,7 @@ const Stepper = ({
                 <button
                     type="button"
                     onClick={handleNext}
-                    className="inline-flex items-center gap-2 bg-brand-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-brand-700 transition-all shadow-lg shadow-brand-500/20 hover:shadow-xl hover:shadow-brand-500/30"
+                    className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 hover:shadow-xl hover:shadow-slate-300"
                 >
                     {currentStep === totalSteps - 1 ? finishButtonText : nextButtonText}
                     {currentStep === totalSteps - 1 ? (

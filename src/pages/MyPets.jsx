@@ -1,46 +1,19 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PawPrint, Heart, Calendar, Plus, Loader2 } from 'lucide-react';
+import { Dog, Cat, Plus, Loader2, Edit2, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { StatusBadge, getPetEmoji } from '../components/Shared';
 import { useData } from '../context/DataContext';
-import Card from '../components/Card';
 
 const MyPets = ({ onAddPetClick }) => {
   const navigate = useNavigate();
-  const { pets, reminders, loading, error } = useData();
-
-  const getPetReminders = (petId) =>
-    reminders
-      .filter((reminder) => reminder.petId === petId && !reminder.completed)
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
+  const { pets, loading, error, activePetId, setActivePetId } = useData();
 
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        >
-          <Loader2 className="w-12 h-12 text-indigo-500" />
-        </motion.div>
-        <p className="text-slate-500 mt-4">Loading your pets...</p>
+      <div className="min-h-[50vh] flex flex-col items-center justify-center">
+        <Loader2 className="w-8 h-8 text-slate-400 animate-spin" />
+        <p className="text-slate-500 mt-4 text-sm font-medium">Loading your pets...</p>
       </div>
     );
   }
@@ -48,155 +21,135 @@ const MyPets = ({ onAddPetClick }) => {
   // Show error state
   if (error) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center space-y-4 bg-white rounded-3xl border border-red-200 p-12">
-        <div className="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center">
-          <PawPrint className="w-8 h-8" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-red-600">Error Loading Pets</h2>
-          <p className="text-slate-500 mt-2">{error}</p>
-        </div>
+      <div className="min-h-[40vh] flex flex-col items-center justify-center text-center p-8 border border-red-100 rounded-xl bg-red-50/50">
+        <p className="text-red-600 font-medium">Unable to load pets</p>
+        <p className="text-red-400 text-sm mt-1">{error}</p>
       </div>
     );
   }
 
-  // Show empty state
-  if (!pets?.length) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="min-h-[60vh] flex flex-col items-center justify-center text-center space-y-6 bg-white rounded-3xl border border-dashed border-slate-200 p-12"
-      >
-        <div className="w-20 h-20 rounded-3xl bg-indigo-50 text-primary flex items-center justify-center shadow-lg shadow-primary/10">
-          <PawPrint className="w-10 h-10" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900">No pets yet</h2>
-          <p className="text-slate-500 mt-2 max-w-md">
-            Add your first companion to start tracking reminders, notes, and health history in one place.
-          </p>
-        </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onAddPetClick}
-          className="inline-flex items-center gap-2 bg-indigo-600 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg shadow-primary/30 hover:bg-indigo-700 transition"
-        >
-          <Plus className="w-5 h-5" />
-          Add a Pet
-        </motion.button>
-      </motion.div>
-    );
-  }
-
-  // Show pets list
   return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="space-y-10"
-    >
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <motion.div variants={item}>
-          <p className="text-sm font-bold text-primary uppercase tracking-widest">My Pets</p>
-          <h1 className="text-3xl font-bold text-slate-900 mt-1">Care Overview</h1>
-          <p className="text-slate-500 mt-2">Manage profiles, upcoming reminders, and wellness details.</p>
-        </motion.div>
-        <motion.button
-          variants={item}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+    <div className="fade-in">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h2 className="text-xl font-semibold text-slate-900 tracking-tight">My Pets</h2>
+          <p className="text-sm text-slate-500 mt-1">Manage profiles, medical records, and details.</p>
+        </div>
+        <button
           onClick={onAddPetClick}
-          className="inline-flex items-center gap-2 bg-indigo-600 text-white font-bold px-5 py-3 rounded-xl shadow-lg shadow-primary/30 hover:bg-indigo-700 transition"
+          className="bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors shadow-sm"
         >
-          <Plus className="w-5 h-5" />
-          Add New Pet
-        </motion.button>
+          <Plus className="w-4 h-4" /> Add Pet
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {pets.map((pet) => {
-          const upcoming = getPetReminders(pet.id);
-          return (
-            <motion.div key={pet.id} variants={item}>
-              <Card
-                onClick={() => navigate(`/pets/${pet.id}`)}
-                className="text-left group cursor-pointer h-full flex flex-col"
+      {pets.length === 0 ? (
+        <div className="text-center py-20 bg-white border border-dashed border-slate-200 rounded-xl">
+          <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+            <Dog className="w-8 h-8" />
+          </div>
+          <h3 className="text-lg font-medium text-slate-900">No pets added yet</h3>
+          <p className="text-slate-500 text-sm mt-1 mb-6 max-w-sm mx-auto">
+            Create a profile for your companion to start tracking their health, reminders, and activity.
+          </p>
+          <button
+            onClick={onAddPetClick}
+            className="text-blue-600 hover:text-blue-700 text-sm font-medium hover:underline"
+          >
+            Add your first pet
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {pets.map((pet, index) => (
+            <motion.div
+              key={pet.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className={`bg-white border rounded-xl overflow-hidden hover:shadow-md transition-all group ${pet.id === activePetId ? 'border-blue-200 ring-1 ring-blue-100' : 'border-slate-200'
+                }`}
+            >
+              <div
+                className="h-40 bg-slate-100 relative cursor-pointer"
+                onClick={() => setActivePetId(pet.id)}
               >
-                <div className="flex items-start gap-5">
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    className="relative"
-                  >
-                    <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-lg transform group-hover:scale-110 transition-transform" />
-                    <img
-                      src={pet.imageUrl}
-                      alt={pet.name}
-                      className="relative w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-md z-10"
-                    />
-                  </motion.div>
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="text-xs uppercase text-slate-400 font-bold tracking-wider">{pet.type}</p>
-                        <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-2 group-hover:text-primary transition-colors">
-                          {getPetEmoji(pet.type)}
-                          {pet.name}
-                        </h3>
-                        <p className="text-sm text-slate-500 font-medium">{pet.breed}</p>
-                      </div>
-                      <div className="flex items-center gap-2 text-rose-500 font-bold text-sm bg-rose-50 px-3 py-1 rounded-full border border-rose-100">
-                        <Heart className="w-4 h-4 fill-rose-500" />
-                        {pet.age} yrs
-                      </div>
-                    </div>
+                <img
+                  src={pet.imageUrl}
+                  alt={pet.name}
+                  className="w-full h-full object-cover"
+                />
+                {/* Active Status Badge */}
+                {pet.id === activePetId && (
+                  <div className="absolute top-3 right-3 bg-blue-600/90 backdrop-blur text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> ACTIVE
+                  </div>
+                )}
+                {pet.id !== activePetId && (
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <span className="bg-white/90 text-slate-900 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm">
+                      Set as Active
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="p-5">
+                <div className="flex justify-between items-start mb-1">
+                  <h3 className="text-lg font-semibold text-slate-900">{pet.name}</h3>
+                  {pet.type === 'Cat' ? <Cat className="w-4 h-4 text-slate-400" /> : <Dog className="w-4 h-4 text-slate-400" />}
+                </div>
+                <p className="text-sm text-slate-500 mb-4">{pet.breed || pet.type}</p>
 
-                    <div className="flex flex-wrap gap-2 text-xs font-bold text-slate-500">
-                      <span className="px-3 py-1 rounded-full bg-slate-50 border border-slate-100">Weight {pet.weight} kg</span>
-                      <span className="px-3 py-1 rounded-full bg-slate-50 border border-slate-100">{upcoming.length} upcoming tasks</span>
-                    </div>
+                <div className="grid grid-cols-3 gap-2 py-3 border-t border-b border-slate-100 mb-4">
+                  <div className="text-center">
+                    <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Age</p>
+                    <p className="text-sm font-semibold text-slate-900">{pet.age} Yrs</p>
+                  </div>
+                  <div className="text-center border-l border-slate-100">
+                    <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Sex</p>
+                    <p className="text-sm font-semibold text-slate-900">{pet.gender || '-'}</p>
+                  </div>
+                  <div className="text-center border-l border-slate-100">
+                    <p className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Weight</p>
+                    <p className="text-sm font-semibold text-slate-900">{pet.weight} kg</p>
                   </div>
                 </div>
 
-                {upcoming.length > 0 ? (
-                  <div className="mt-6 border-t border-slate-50 pt-4 space-y-3 flex-1">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Upcoming reminders</p>
-                    {upcoming.slice(0, 2).map((reminder) => (
-                      <div
-                        key={reminder.id}
-                        className="flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3 border border-slate-100"
-                      >
-                        <div>
-                          <p className="font-bold text-slate-900">{reminder.title}</p>
-                          <div className="flex items-center gap-3 text-xs font-medium text-slate-500 mt-1">
-                            <span className="inline-flex items-center gap-1">
-                              <Calendar className="w-3 h-3" />
-                              {new Date(reminder.date).toLocaleDateString()}
-                            </span>
-                            <StatusBadge type={reminder.type} />
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    {upcoming.length > 2 && (
-                      <p className="text-xs text-primary font-bold pl-1">
-                        +{upcoming.length - 2} more scheduled tasks
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <div className="mt-6 border-t border-slate-50 pt-4 text-sm text-slate-400 font-medium flex-1 flex items-end">
-                    No pending reminders. Great job!
-                  </div>
-                )}
-              </Card>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => navigate(`/pets/${pet.id}`)}
+                    className="flex-1 bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium py-2 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors flex items-center justify-center gap-2"
+                  >
+                    View Details
+                  </button>
+                  <button
+                    onClick={() => navigate(`/profile`)}
+                    className="p-2 bg-white border border-slate-200 text-slate-400 rounded-lg hover:text-slate-900 hover:border-slate-300 transition-colors"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
             </motion.div>
-          );
-        })}
-      </div>
-    </motion.div>
+          ))}
+
+          {/* Add New Pet Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: pets.length * 0.1 }}
+            className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-slate-100 hover:border-slate-400 transition-all cursor-pointer group h-full min-h-[300px]"
+            onClick={onAddPetClick}
+          >
+            <div className="w-12 h-12 bg-white border border-slate-200 rounded-full flex items-center justify-center text-slate-400 group-hover:text-slate-900 group-hover:border-slate-300 transition-colors mb-3 shadow-sm">
+              <Plus className="w-6 h-6" />
+            </div>
+            <h3 className="text-sm font-semibold text-slate-900">Add Another Pet</h3>
+            <p className="text-xs text-slate-500 mt-1 max-w-[150px]">Track another furry friend's health and schedule</p>
+          </motion.div>
+        </div>
+      )}
+    </div>
   );
 };
 
