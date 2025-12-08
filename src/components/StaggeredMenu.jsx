@@ -90,6 +90,9 @@ const StaggeredMenu = ({
         open: { opacity: 1, y: 0, transition: { delay: 0.5, duration: 0.5 } },
     };
 
+    // Support both 'action' and 'onClick' for backwards compatibility
+    const getItemAction = (item) => item.action || item.onClick;
+
     return (
         <>
             {/* Menu Button */}
@@ -153,93 +156,98 @@ const StaggeredMenu = ({
 
                         {/* Menu Items */}
                         <nav style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            {items.map((item, index) => (
-                                <motion.div key={index} variants={itemVariants}>
-                                    {item.onClick ? (
-                                        <button
-                                            onClick={() => {
-                                                item.onClick();
-                                                toggleMenu();
-                                            }}
-                                            style={{
-                                                textDecoration: 'none',
-                                                color: 'white',
-                                                fontSize: '2rem',
-                                                fontWeight: 'bold',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '15px',
-                                                position: 'relative',
-                                                background: 'none',
-                                                border: 'none',
-                                                cursor: 'pointer',
-                                                padding: 0,
-                                                textAlign: 'left',
-                                            }}
-                                            aria-label={item.ariaLabel}
-                                            onMouseEnter={(e) => {
-                                                e.currentTarget.querySelector('span:last-child').style.color = accentColor;
-                                            }}
-                                            onMouseLeave={(e) => {
-                                                e.currentTarget.querySelector('span:last-child').style.color = 'white';
-                                            }}
-                                        >
-                                            {displayItemNumbering && (
-                                                <span
-                                                    style={{
-                                                        fontSize: '1rem',
-                                                        opacity: 0.6,
-                                                        fontFamily: 'monospace',
-                                                    }}
-                                                >
-                                                    {String(index + 1).padStart(2, '0')}
-                                                </span>
-                                            )}
-                                            <span>{item.label}</span>
-                                        </button>
-                                    ) : (
-                                        <Link
-                                            to={item.link}
-                                            style={{
-                                                textDecoration: 'none',
-                                                color: 'white',
-                                                fontSize: '2rem',
-                                                fontWeight: 'bold',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '15px',
-                                                position: 'relative',
-                                            }}
-                                            aria-label={item.ariaLabel}
-                                        >
-                                            {displayItemNumbering && (
-                                                <span
-                                                    style={{
-                                                        fontSize: '1rem',
-                                                        opacity: 0.6,
-                                                        fontFamily: 'monospace',
-                                                    }}
-                                                >
-                                                    {String(index + 1).padStart(2, '0')}
-                                                </span>
-                                            )}
-                                            <span
+                            {items.map((item, index) => {
+                                const itemAction = getItemAction(item);
+                                return (
+                                    <motion.div key={index} variants={itemVariants}>
+                                        {itemAction ? (
+                                            <div
+                                                onClick={() => {
+                                                    itemAction();
+                                                    toggleMenu();
+                                                }}
                                                 style={{
+                                                    textDecoration: 'none',
+                                                    color: 'white',
+                                                    fontSize: '2rem',
+                                                    fontWeight: 'bold',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '15px',
+                                                    position: 'relative',
+                                                    cursor: 'pointer',
+                                                }}
+                                                aria-label={item.ariaLabel}
+                                            >
+                                                {displayItemNumbering && (
+                                                    <span
+                                                        style={{
+                                                            fontSize: '1rem',
+                                                            opacity: 0.6,
+                                                            fontFamily: 'monospace',
+                                                        }}
+                                                    >
+                                                        {String(index + 1).padStart(2, '0')}
+                                                    </span>
+                                                )}
+                                                <span
+                                                    style={{
+                                                        position: 'relative',
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.target.style.color = accentColor;
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.target.style.color = 'white';
+                                                    }}
+                                                >
+                                                    {item.label}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <Link
+                                                to={item.link}
+                                                style={{
+                                                    textDecoration: 'none',
+                                                    color: 'white',
+                                                    fontSize: '2rem',
+                                                    fontWeight: 'bold',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '15px',
                                                     position: 'relative',
                                                 }}
-                                                onMouseEnter={(e) => {
-                                                    e.target.style.color = accentColor;
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.target.style.color = 'white';
-                                                }}
+                                                aria-label={item.ariaLabel}
                                             >
-                                                {item.label}
-                                            </span>
-                                        </Link>
-                                    )}
-                                </motion.div>
-                            ))}
+                                                {displayItemNumbering && (
+                                                    <span
+                                                        style={{
+                                                            fontSize: '1rem',
+                                                            opacity: 0.6,
+                                                            fontFamily: 'monospace',
+                                                        }}
+                                                    >
+                                                        {String(index + 1).padStart(2, '0')}
+                                                    </span>
+                                                )}
+                                                <span
+                                                    style={{
+                                                        position: 'relative',
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.target.style.color = accentColor;
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.target.style.color = 'white';
+                                                    }}
+                                                >
+                                                    {item.label}
+                                                </span>
+                                            </Link>
+                                        )}
+                                    </motion.div>
+                                );
+                            })}
                         </nav>
 
                         {/* Social Items */}
