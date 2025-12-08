@@ -15,6 +15,8 @@ import PetDetail from './pages/PetDetail';
 import Community from './pages/Community';
 import Moderation from './pages/Moderation';
 import Profile from './pages/Profile';
+import Reminders from './pages/Reminders';
+import Settings from './pages/Settings';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, isAuthenticated }) => {
@@ -56,72 +58,82 @@ const App = () => {
     <DataProvider>
       <Routes>
         {/* Public Routes */}
-          <Route
-            path="/login"
-            element={
-              isAuthenticated ? (
-                <Navigate to="/" replace />
-              ) : (
-                <Login onLogin={handleLogin} />
-              )
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              isAuthenticated ? (
-                <Navigate to="/" replace />
-              ) : (
-                <Register onRegister={handleRegister} />
-              )
-            }
-          />
+        <Route
+          path="/login"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/" replace />
+            ) : (
+              <Login onLogin={handleLogin} />
+            )
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/" replace />
+            ) : (
+              <Register onRegister={handleRegister} />
+            )
+          }
+        />
 
-          {/* Protected Routes */}
-          <Route
-            path="/*"
-            element={
-              <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <Layout
-                  isModerator={user?.role === 'Moderator'}
-                  userName={user?.name}
-                  userRole={user?.role}
-                  userAvatar={user?.avatarUrl}
-                  onLogout={handleLogout}
-                >
-                  <Routes>
-                    <Route path="/" element={<Dashboard user={user} />} />
-                    <Route path="/pets" element={<MyPets onAddPetClick={() => setIsAddingPet(true)} />} />
-                    <Route path="/pets/:id" element={<PetDetail />} />
-                    <Route
-                      path="/community"
-                      element={
-                        <Community
-                          user={user}
-                          onToggleRole={() => console.log('Toggle role')}
-                        />
-                      }
-                    />
-                    <Route path="/moderation" element={<Moderation />} />
-                    <Route
-                      path="/profile"
-                      element={
-                        <Profile
-                          user={user}
-                          onUpdateUser={handleUpdateUser}
-                          onAddPetClick={() => setIsAddingPet(true)}
-                        />
-                      }
-                    />
-                  </Routes>
+        {/* Protected Routes */}
+        <Route
+          path="/*"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Layout
+                isModerator={user?.role === 'Moderator'}
+                userName={user?.name}
+                userRole={user?.role}
+                userAvatar={user?.avatarUrl}
+                onLogout={handleLogout}
+              >
+                <Routes>
+                  <Route path="/" element={<Dashboard user={user} />} />
+                  <Route path="/pets" element={<MyPets onAddPetClick={() => setIsAddingPet(true)} />} />
+                  <Route path="/pets/:id" element={<PetDetail />} />
+                  <Route
+                    path="/community"
+                    element={
+                      <Community
+                        user={user}
+                        onToggleRole={() => console.log('Toggle role')}
+                      />
+                    }
+                  />
+                  <Route path="/moderation" element={<Moderation />} />
+                  <Route path="/reminders" element={<Reminders />} />
+                  <Route
+                    path="/settings"
+                    element={
+                      <Settings
+                        user={user}
+                        onUpdateUser={handleUpdateUser}
+                      />
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <Profile
+                        user={user}
+                        onUpdateUser={handleUpdateUser}
+                        onAddPetClick={() => setIsAddingPet(true)}
+                      />
+                    }
+                  />
+                </Routes>
 
-                  {isAddingPet && <AddPetModal onClose={() => setIsAddingPet(false)} />}
-                </Layout>
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </DataProvider>
+                {isAddingPet && <AddPetModal onClose={() => setIsAddingPet(false)} />}
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </DataProvider>
   );
 };
 

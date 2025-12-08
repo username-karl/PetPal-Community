@@ -27,6 +27,8 @@ public class Reminder {
 
     private String type;
 
+    private String recurrence; // 'None', 'Daily', 'Weekly', 'Monthly'
+
     private boolean completed;
 
     @ManyToOne

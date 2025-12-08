@@ -9,7 +9,10 @@ export const ReminderType = {
   VACCINATION: 'Vaccination',
   MEDICATION: 'Medication',
   GROOMING: 'Grooming',
-  VET_VISIT: 'Vet Visit'
+  VET_VISIT: 'Vet Visit',
+  GENERAL: 'General',
+  SHOPPING: 'Shopping',
+  ROUTINE: 'Routine'
 };
 
 export const PET_CARE_TIPS = [

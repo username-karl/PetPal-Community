@@ -1,155 +1,130 @@
 import React, { useState } from 'react';
-import { Search, Filter, Camera, Send, Trash2, Heart, MessageSquare, X, Sparkles, User as UserIcon } from 'lucide-react';
+import { Search, Image, Paperclip, MoreHorizontal, Heart, MessageCircle, X } from 'lucide-react';
 import { useData } from '../context/DataContext';
-import { Button } from '../components/ui/stateful-button';
 
 const Community = ({ user, onToggleRole }) => {
   const { posts, createPost, deletePost, deleteComment } = useData();
-  const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
-  const [newPostCategory, setNewPostCategory] = useState('Advice');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    if (!newPostContent.trim()) return;
+
+    setIsLoading(true);
+    // Simulate slight delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 600));
+
     await createPost({
-      title: newPostTitle,
+      title: 'Update', // Simplified since mockup has no title field
       content: newPostContent,
-      category: newPostCategory,
+      category: 'General',
       author: user.name
     });
-    setNewPostTitle('');
     setNewPostContent('');
+    setIsLoading(false);
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
-      <div className="lg:col-span-2 space-y-8">
-        <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold text-slate-900">Community Feed</h2>
-          <div className="flex gap-2">
-            <button className="p-3 text-slate-500 hover:text-primary-600 bg-white border border-slate-200 rounded-xl shadow-soft hover:shadow-primary/20 transition">
-              <Search className="w-5 h-5" />
-            </button>
-            <button className="p-3 text-slate-500 hover:text-primary-600 bg-white border border-slate-200 rounded-xl shadow-soft hover:shadow-primary/20 transition">
-              <Filter className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Create Post Box */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-soft">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center text-primary-700 font-bold">
-              {user.name.charAt(0)}
-            </div>
-            <h3 className="font-bold text-slate-800">Start a discussion</h3>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input
-              type="text"
-              placeholder="Title your post..."
-              value={newPostTitle}
-              onChange={(e) => setNewPostTitle(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none font-bold text-slate-800 placeholder-slate-400 transition-all"
-              required
-            />
-            <textarea
-              placeholder="Share your tips, questions, or stories..."
-              value={newPostContent}
-              onChange={(e) => setNewPostContent(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none min-h-[120px] resize-none text-slate-700 placeholder-slate-400 transition-all"
-              required
-            />
-            <div className="flex justify-between items-center pt-2">
-              <div className="flex gap-2">
-                <button type="button" className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition">
-                  <Camera className="w-5 h-5" />
-                </button>
-                <select
-                  value={newPostCategory}
-                  onChange={(e) => setNewPostCategory(e.target.value)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-bold text-slate-700 focus:outline-none cursor-pointer transition"
-                >
-                  <option value="Advice">Advice</option>
-                  <option value="Story">Story</option>
-                  <option value="Lost & Found">Lost & Found</option>
-                  <option value="Adoption">Adoption</option>
-                </select>
-              </div>
-              <Button type="submit" onClick={handleSubmit}>
-                Post
-                <Send className="w-4 h-4" />
-              </Button>
-            </div>
-          </form>
-        </div>
-
-        {/* Post Feed */}
-        <div className="space-y-6">
-          {posts.map(post => (
-            <div key={post.id} className="bg-white p-8 rounded-3xl border border-slate-100 shadow-soft hover:shadow-lg transition duration-300">
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center text-slate-600 font-bold text-lg shadow-inner border border-white">
-                    {post.author.charAt(0)}
+    <div className="fade-in">
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Main Feed */}
+        <div className="flex-1 space-y-6">
+          {/* Create Post Box */}
+          <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+            <div className="flex gap-4">
+              <img
+                src={user?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'User'}`}
+                className="w-10 h-10 rounded-full bg-slate-100 ring-1 ring-slate-100"
+                alt="Me"
+              />
+              <div className="flex-1">
+                <input
+                  type="text"
+                  value={newPostContent}
+                  onChange={(e) => setNewPostContent(e.target.value)}
+                  placeholder="Share a tip or ask a question..."
+                  className="w-full bg-slate-50 border-0 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all placeholder:text-slate-400"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSubmit();
+                    }
+                  }}
+                />
+                <div className="flex justify-between items-center mt-3">
+                  <div className="flex gap-2 text-slate-400">
+                    <button className="hover:text-slate-600 hover:bg-slate-100 p-1.5 rounded-md transition-colors">
+                      <Image className="w-4 h-4" />
+                    </button>
+                    <button className="hover:text-slate-600 hover:bg-slate-100 p-1.5 rounded-md transition-colors">
+                      <Paperclip className="w-4 h-4" />
+                    </button>
                   </div>
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isLoading || !newPostContent.trim()}
+                    className="bg-slate-900 text-white text-xs font-semibold px-4 py-1.5 rounded-md hover:bg-slate-800 transition-colors disabled:opacity-50"
+                  >
+                    {isLoading ? 'Posting...' : 'Post'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Posts List */}
+          {posts.map(post => (
+            <div key={post.id} className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author}`}
+                    className="w-10 h-10 rounded-full bg-slate-100"
+                    alt={post.author}
+                  />
                   <div>
-                    <p className="font-bold text-slate-900 text-base">{post.author}</p>
-                    <p className="text-xs text-slate-500 font-medium mt-0.5">{new Date(post.timestamp).toLocaleDateString()} • <span className="text-primary">{post.category}</span></p>
+                    <h4 className="text-sm font-semibold text-slate-900">{post.author}</h4>
+                    <p className="text-xs text-slate-500">
+                      {new Date(post.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • <span className="text-blue-600 font-medium">{post.category}</span>
+                    </p>
                   </div>
                 </div>
-                {user.role === 'Moderator' && (
+                {user.role === 'Moderator' ? (
                   <button
                     onClick={() => deletePost(post.id)}
-                    className="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-2 rounded-lg transition"
-                    title="Moderator Delete"
+                    className="text-slate-400 hover:text-red-500 transition-colors p-1"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <X className="w-4 h-4" />
+                  </button>
+                ) : (
+                  <button className="text-slate-400 hover:text-slate-600">
+                    <MoreHorizontal className="w-4 h-4" />
                   </button>
                 )}
               </div>
 
-              <h3 className="text-xl font-bold text-slate-900 mb-3">{post.title}</h3>
-              <p className="text-slate-600 leading-relaxed mb-6 text-base">{post.content}</p>
+              {post.title && <h3 className="text-base font-semibold text-slate-900 mb-2">{post.title}</h3>}
 
-              <div className="flex items-center gap-6 pt-6 border-t border-slate-50 text-slate-500">
-                <button className="flex items-center gap-2 hover:text-rose-500 transition group">
-                  <div className="p-2 bg-slate-50 rounded-full group-hover:bg-rose-50 transition">
-                    <Heart className="w-5 h-5 group-hover:fill-rose-500 group-hover:text-rose-500" />
-                  </div>
-                  <span className="text-sm font-bold">{post.likes}</span>
+              <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                {post.content}
+              </p>
+
+              <div className="flex items-center gap-4 border-t border-slate-100 pt-3">
+                <button className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-red-500 transition-colors group">
+                  <Heart className="w-4 h-4 group-hover:fill-red-500" /> {post.likes || 24}
                 </button>
-                <button className="flex items-center gap-2 hover:text-primary transition group">
-                  <div className="p-2 bg-slate-50 rounded-full group-hover:bg-indigo-50 transition">
-                    <MessageSquare className="w-5 h-5" />
-                  </div>
-                  <span className="text-sm font-bold">{post.comments.length} Comments</span>
+                <button className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-blue-500 transition-colors">
+                  <MessageCircle className="w-4 h-4" /> {post.comments?.length || 8} Comments
                 </button>
               </div>
 
-              {/* Comments Section */}
-              {post.comments.length > 0 && (
-                <div className="mt-6 bg-slate-50/80 rounded-2xl p-6 space-y-4 border border-slate-100">
-                  {post.comments.map(comment => (
-                    <div key={comment.id} className="flex justify-between items-start group">
-                      <div className="flex gap-3">
-                        <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-xs font-bold text-slate-500 border border-slate-200">
-                          {comment.author.charAt(0)}
-                        </div>
-                        <div className="bg-white p-3 rounded-r-xl rounded-bl-xl shadow-sm border border-slate-100">
-                          <span className="font-bold text-xs text-slate-900 block mb-1">{comment.author}</span>
-                          <p className="text-sm text-slate-600">{comment.text}</p>
-                        </div>
-                      </div>
-                      {user.role === 'Moderator' && (
-                        <button
-                          onClick={() => deleteComment(post.id, comment.id)}
-                          className="text-slate-300 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      )}
+              {/* Simple Comments Preview */}
+              {post.comments && post.comments.length > 0 && (
+                <div className="mt-4 pt-3 border-t border-slate-50 space-y-3">
+                  {post.comments.slice(0, 2).map((comment, idx) => (
+                    <div key={idx} className="flex gap-2 text-sm">
+                      <span className="font-bold text-slate-800 text-xs">{comment.author}</span>
+                      <span className="text-slate-600 text-xs">{comment.text}</span>
                     </div>
                   ))}
                 </div>
@@ -157,37 +132,40 @@ const Community = ({ user, onToggleRole }) => {
             </div>
           ))}
         </div>
-      </div>
 
-      <div className="space-y-8">
-        {/* Trending Topics Widget */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-soft sticky top-8">
-          <h3 className="font-bold text-slate-800 mb-6 text-lg flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-primary fill-primary" />
-            Trending Topics
-          </h3>
-          <ul className="space-y-4">
-            {['Summer Safety Tips', 'Dog Training 101', 'Best Cat Toys', 'Senior Pet Diet', 'Local Vet Reviews'].map((topic, i) => (
-              <li key={i} className="flex items-center gap-4 text-slate-600 hover:text-primary cursor-pointer group transition">
-                <span className="w-8 h-8 rounded-lg bg-slate-50 text-slate-500 group-hover:bg-gradient-to-br group-hover:from-primary-600 group-hover:to-accent-600 group-hover:text-white flex items-center justify-center text-sm font-bold transition duration-300">#{i + 1}</span>
-                <span className="font-medium">{topic}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* Right Sidebar */}
+        <div className="w-full md:w-80 space-y-6">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 sticky top-24">
+            <h3 className="text-sm font-semibold text-slate-900 mb-4">Trending Topics</h3>
+            <div className="flex flex-wrap gap-2">
+              {[
+                'PuppyTraining',
+                'VetAdvice',
+                'DogFood',
+                'GoldenRetriever',
+                'CatBehavior',
+                'AdoptionStories'
+              ].map((tag) => (
+                <span
+                  key={tag}
+                  className="px-2.5 py-1 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 hover:border-slate-300 hover:text-slate-900 cursor-pointer transition-colors"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </div>
 
-        {/* Mod Toggle */}
-        <div className="bg-slate-900 text-slate-400 p-6 rounded-3xl text-sm border border-slate-800">
-          <p className="mb-3 font-bold text-white flex items-center gap-2">
-            <UserIcon className="w-4 h-4" /> Role Switcher
-          </p>
-          <p className="mb-4 leading-relaxed">Toggle between a regular User and a Moderator to see different controls.</p>
-          <button
-            onClick={onToggleRole}
-            className="w-full py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-white font-bold transition border border-slate-700"
-          >
-            Switch to {user.role === 'Owner' ? 'Moderator' : 'Owner'}
-          </button>
+          {/* Mod Toggle - Kept for functionality even if not in visual mockup */}
+          <div className="bg-white border border-slate-200 rounded-xl p-5">
+            <h3 className="text-sm font-semibold text-slate-900 mb-2">View As</h3>
+            <button
+              onClick={onToggleRole}
+              className="w-full py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-medium text-slate-700 transition-colors"
+            >
+              Switch to {user.role === 'Owner' ? 'Moderator' : 'Owner'} Mode
+            </button>
+          </div>
         </div>
       </div>
     </div>

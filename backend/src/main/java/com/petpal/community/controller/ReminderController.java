@@ -35,6 +35,7 @@ public class ReminderController {
             Reminder reminder = new Reminder();
             reminder.setTitle((String) reminderData.get("title"));
             reminder.setType((String) reminderData.get("type"));
+            reminder.setRecurrence((String) reminderData.getOrDefault("recurrence", "None"));
 
             // Parse date string (YYYY-MM-DD) to LocalDateTime
             String dateString = (String) reminderData.get("date");

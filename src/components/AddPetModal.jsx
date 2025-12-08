@@ -65,8 +65,8 @@ const AddPetModal = ({ onClose }) => {
           <Step>
             <div className="space-y-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center">
-                  <PawPrint className="w-6 h-6 text-brand-600" />
+                <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center">
+                  <PawPrint className="w-6 h-6 text-slate-900" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-slate-900">Basic Information</h2>
@@ -81,7 +81,7 @@ const AddPetModal = ({ onClose }) => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-all"
                   placeholder="e.g., Max, Bella, Whiskers"
                 />
               </div>
@@ -94,7 +94,7 @@ const AddPetModal = ({ onClose }) => {
                       name="type"
                       value={formData.type}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none appearance-none bg-white"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none appearance-none bg-white"
                     >
                       {Object.values(PetType).map(t => (
                         <option key={t} value={t}>{t}</option>
@@ -110,7 +110,7 @@ const AddPetModal = ({ onClose }) => {
                     value={formData.breed}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-all"
                     placeholder="e.g., Labrador, Persian"
                   />
                 </div>
@@ -122,8 +122,8 @@ const AddPetModal = ({ onClose }) => {
           <Step>
             <div className="space-y-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center">
-                  <Activity className="w-6 h-6 text-brand-600" />
+                <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center">
+                  <Activity className="w-6 h-6 text-slate-900" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-slate-900">Physical Details</h2>
@@ -141,7 +141,7 @@ const AddPetModal = ({ onClose }) => {
                     value={formData.age}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-all"
                     placeholder="e.g., 3.5"
                   />
                 </div>
@@ -154,7 +154,7 @@ const AddPetModal = ({ onClose }) => {
                     value={formData.weight}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-all"
                     placeholder="e.g., 25.5"
                   />
                 </div>
@@ -167,7 +167,7 @@ const AddPetModal = ({ onClose }) => {
                     name="color"
                     value={formData.color}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-all"
                     placeholder="e.g., Golden Brown"
                   />
                 </div>
@@ -178,7 +178,7 @@ const AddPetModal = ({ onClose }) => {
                       name="gender"
                       value={formData.gender}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none appearance-none bg-white"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none appearance-none bg-white"
                     >
                       <option value="">Select Gender</option>
                       <option value="Male">Male</option>
@@ -195,8 +195,8 @@ const AddPetModal = ({ onClose }) => {
           <Step>
             <div className="space-y-4">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center">
-                  <Eye className="w-6 h-6 text-brand-600" />
+                <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center">
+                  <Eye className="w-6 h-6 text-slate-900" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-slate-900">Review & Confirm</h2>
@@ -204,7 +204,7 @@ const AddPetModal = ({ onClose }) => {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-brand-50 to-purple-50 rounded-2xl p-4 border border-brand-100">
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-4 border border-slate-200">
                 <div className="flex items-start gap-3">
                   <div className="text-4xl">{getPetEmoji(formData.type)}</div>
                   <div className="flex-1 space-y-3">
@@ -233,7 +233,7 @@ const AddPetModal = ({ onClose }) => {
                     </div>
 
                     {formData.color && (
-                      <div className="pt-3 border-t border-brand-200">
+                      <div className="pt-3 border-t border-slate-200">
                         <p className="text-xs"><span className="font-semibold text-slate-700">Color:</span> {formData.color}</p>
                       </div>
                     )}

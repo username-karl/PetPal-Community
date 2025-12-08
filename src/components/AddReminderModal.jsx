@@ -15,8 +15,9 @@ const AddReminderModal = ({ onClose }) => {
         const title = formData.get('title');
         const date = formData.get('date');
         const type = formData.get('type');
+        const recurrence = formData.get('recurrence');
 
-        addReminder(petId, title, date, type);
+        addReminder(petId, title, date, type, recurrence);
         onClose();
     };
 
@@ -62,7 +63,7 @@ const AddReminderModal = ({ onClose }) => {
                                 name="petId"
                                 value={selectedPetId}
                                 onChange={(e) => setSelectedPetId(e.target.value)}
-                                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none bg-white"
+                                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none appearance-none bg-white"
                             >
                                 {pets.map((pet) => (
                                     <option key={pet.id} value={pet.id}>
@@ -78,7 +79,7 @@ const AddReminderModal = ({ onClose }) => {
                         <input
                             name="title"
                             required
-                            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-all"
                             placeholder="e.g., Annual Checkup"
                         />
                     </div>
@@ -89,7 +90,7 @@ const AddReminderModal = ({ onClose }) => {
                                 name="date"
                                 type="date"
                                 required
-                                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-all"
                             />
                         </div>
                         <div>
@@ -97,7 +98,7 @@ const AddReminderModal = ({ onClose }) => {
                             <div className="relative">
                                 <select
                                     name="type"
-                                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none appearance-none bg-white"
+                                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none appearance-none bg-white"
                                 >
                                     {Object.values(ReminderType).map((type) => (
                                         <option key={type} value={type}>
@@ -109,9 +110,25 @@ const AddReminderModal = ({ onClose }) => {
                             </div>
                         </div>
                     </div>
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Recurrence</label>
+                        <div className="relative">
+                            <select
+                                name="recurrence"
+                                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none appearance-none bg-white"
+                                defaultValue="None"
+                            >
+                                <option value="None">None</option>
+                                <option value="Daily">Daily</option>
+                                <option value="Weekly">Weekly</option>
+                                <option value="Monthly">Monthly</option>
+                            </select>
+                            <ChevronRight className="w-4 h-4 absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-slate-400 pointer-events-none" />
+                        </div>
+                    </div>
                     <button
                         type="submit"
-                        className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-primary/20 mt-2"
+                        className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200 mt-2"
                     >
                         Create Reminder
                     </button>
