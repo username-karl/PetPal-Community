@@ -11,7 +11,8 @@ import {
     ChevronLeft,
     ChevronRight,
     Filter,
-    Plus
+    Plus,
+    AlertCircle
 } from 'lucide-react';
 import {
     format,
@@ -24,9 +25,87 @@ import {
     isSameDay,
     addMonths,
     subMonths,
-    isToday
+    isToday,
+    isTomorrow,
+    isYesterday,
+    isPast,
+    differenceInDays,
+    startOfDay
 } from 'date-fns';
 import AddReminderModal from '../components/AddReminderModal';
+import ReminderDetailsModal from '../components/ReminderDetailsModal';
+
+// Helper function to get due date info
+const getDueDateInfo = (dateStr, completed) => {
+    const date = startOfDay(new Date(dateStr));
+    const today = startOfDay(new Date());
+    const daysDiff = differenceInDays(date, today);
+
+    if (completed) {
+        return {
+            label: format(date, 'MMM d'),
+            status: 'completed',
+            bgColor: 'bg-slate-100',
+            textColor: 'text-slate-400',
+            borderColor: 'border-slate-200',
+            icon: null
+        };
+    }
+
+    if (isToday(date)) {
+        return {
+            label: 'Today',
+            status: 'today',
+            bgColor: 'bg-amber-50',
+            textColor: 'text-amber-700',
+            borderColor: 'border-amber-200',
+            icon: null
+        };
+    }
+
+    if (isTomorrow(date)) {
+        return {
+            label: 'Tomorrow',
+            status: 'upcoming',
+            bgColor: 'bg-blue-50',
+            textColor: 'text-blue-600',
+            borderColor: 'border-blue-200',
+            icon: null
+        };
+    }
+
+    if (isPast(date)) {
+        const daysOverdue = Math.abs(daysDiff);
+        return {
+            label: daysOverdue === 1 ? 'Yesterday' : `${daysOverdue} days overdue`,
+            status: 'overdue',
+            bgColor: 'bg-red-50',
+            textColor: 'text-red-600',
+            borderColor: 'border-red-200',
+            icon: AlertCircle
+        };
+    }
+
+    if (daysDiff <= 7) {
+        return {
+            label: `In ${daysDiff} days`,
+            status: 'upcoming',
+            bgColor: 'bg-blue-50',
+            textColor: 'text-blue-600',
+            borderColor: 'border-blue-200',
+            icon: null
+        };
+    }
+
+    return {
+        label: format(date, 'MMM d'),
+        status: 'future',
+        bgColor: 'bg-slate-50',
+        textColor: 'text-slate-600',
+        borderColor: 'border-slate-200',
+        icon: null
+    };
+};
 
 const Reminders = ({ user }) => {
     const { reminders, toggleReminder, deleteReminder, pets } = useData();
@@ -34,6 +113,7 @@ const Reminders = ({ user }) => {
     const [viewMode, setViewMode] = useState('list'); // 'list' | 'calendar'
     const [currentDate, setCurrentDate] = useState(new Date());
     const [showAddReminderModal, setShowAddReminderModal] = useState(false);
+    const [selectedReminder, setSelectedReminder] = useState(null);
 
     // --- Calendar Logic ---
     const headerDate = format(currentDate, "MMMM yyyy");
@@ -58,6 +138,13 @@ const Reminders = ({ user }) => {
         if (filter === 'upcoming') return new Date(reminder.date) > new Date();
         if (filter === 'completed') return reminder.completed;
         return true;
+    }).sort((a, b) => {
+        // Sort completed tasks to the bottom
+        if (a.completed !== b.completed) {
+            return a.completed ? 1 : -1;
+        }
+        // Then sort by date (earliest first)
+        return new Date(a.date) - new Date(b.date);
     });
 
     const getRemindersForDate = (date) => {
@@ -92,8 +179,8 @@ const Reminders = ({ user }) => {
                         <button
                             onClick={() => setViewMode('list')}
                             className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === 'list'
-                                    ? 'bg-white text-slate-900 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-900'
+                                ? 'bg-white text-slate-900 shadow-sm'
+                                : 'text-slate-500 hover:text-slate-900'
                                 }`}
                         >
                             <List className="w-4 h-4" /> List
@@ -101,8 +188,8 @@ const Reminders = ({ user }) => {
                         <button
                             onClick={() => setViewMode('calendar')}
                             className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === 'calendar'
-                                    ? 'bg-white text-slate-900 shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-900'
+                                ? 'bg-white text-slate-900 shadow-sm'
+                                : 'text-slate-500 hover:text-slate-900'
                                 }`}
                         >
                             <CalendarIcon className="w-4 h-4" /> Calendar
@@ -124,8 +211,8 @@ const Reminders = ({ user }) => {
                                         key={category.id}
                                         onClick={() => setFilter(category.id)}
                                         className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${filter === category.id
-                                                ? 'bg-slate-900 text-white'
-                                                : 'text-slate-600 hover:bg-slate-50'
+                                            ? 'bg-slate-900 text-white'
+                                            : 'text-slate-600 hover:bg-slate-50'
                                             }`}
                                     >
                                         <span>{category.label}</span>
@@ -160,13 +247,14 @@ const Reminders = ({ user }) => {
                                         return (
                                             <div
                                                 key={reminder.id}
-                                                className={`p-4 flex items-center gap-4 hover:bg-slate-50 transition-all group ${reminder.completed ? 'opacity-60 bg-slate-50/50' : ''}`}
+                                                className={`p-4 flex items-center gap-4 hover:bg-slate-50 transition-all group cursor-pointer ${reminder.completed ? 'opacity-60 bg-slate-50/50' : ''}`}
+                                                onClick={() => setSelectedReminder(reminder)}
                                             >
                                                 <button
-                                                    onClick={() => toggleReminder(reminder.id)}
+                                                    onClick={(e) => { e.stopPropagation(); toggleReminder(reminder.id); }}
                                                     className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${reminder.completed
-                                                            ? 'bg-emerald-500 border-emerald-500 text-white'
-                                                            : 'border-slate-300 text-transparent hover:border-slate-400'
+                                                        ? 'bg-emerald-500 border-emerald-500 text-white'
+                                                        : 'border-slate-300 text-transparent hover:border-slate-400'
                                                         }`}
                                                 >
                                                     <CheckCircle2 className="w-3.5 h-3.5" />
@@ -176,14 +264,21 @@ const Reminders = ({ user }) => {
                                                     <h4 className={`text-sm font-medium truncate ${reminder.completed ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
                                                         {reminder.title}
                                                     </h4>
-                                                    <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
-                                                        <span className="flex items-center gap-1">
-                                                            <Clock className="w-3 h-3" />
-                                                            {new Date(reminder.date).toLocaleDateString()}
-                                                        </span>
+                                                    <div className="flex items-center gap-2 mt-1 text-xs text-slate-500 flex-wrap">
+                                                        {(() => {
+                                                            const dueDateInfo = getDueDateInfo(reminder.date, reminder.completed);
+                                                            const IconComponent = dueDateInfo.icon;
+                                                            return (
+                                                                <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded border ${dueDateInfo.bgColor} ${dueDateInfo.textColor} ${dueDateInfo.borderColor} font-medium`}>
+                                                                    {IconComponent && <IconComponent className="w-3 h-3" />}
+                                                                    <Clock className="w-3 h-3" />
+                                                                    {dueDateInfo.label}
+                                                                </span>
+                                                            );
+                                                        })()}
                                                         <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium border ${reminder.type === 'Medical' ? 'bg-red-50 text-red-600 border-red-100' :
-                                                                reminder.type === 'Grooming' ? 'bg-purple-50 text-purple-600 border-purple-100' :
-                                                                    'bg-blue-50 text-blue-600 border-blue-100'
+                                                            reminder.type === 'Grooming' ? 'bg-purple-50 text-purple-600 border-purple-100' :
+                                                                'bg-blue-50 text-blue-600 border-blue-100'
                                                             }`}>
                                                             {reminder.type}
                                                         </span>
@@ -192,12 +287,12 @@ const Reminders = ({ user }) => {
                                                                 {reminder.recurrence}
                                                             </span>
                                                         )}
-                                                        {pet && ` • ${pet.name}`}
+                                                        {pet && <span className="text-slate-400">• {pet.name}</span>}
                                                     </div>
                                                 </div>
 
                                                 <button
-                                                    onClick={() => deleteReminder(reminder.id)}
+                                                    onClick={(e) => { e.stopPropagation(); deleteReminder(reminder.id); }}
                                                     className="opacity-0 group-hover:opacity-100 p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -273,10 +368,10 @@ const Reminders = ({ user }) => {
                                                     <div
                                                         key={i}
                                                         className={`text-[10px] truncate px-1.5 py-0.5 rounded border border-transparent ${rem.completed
-                                                                ? 'bg-slate-100 text-slate-400 line-through'
-                                                                : rem.type === 'Medical'
-                                                                    ? 'bg-red-50 text-red-700 border-red-100'
-                                                                    : 'bg-blue-50 text-blue-700 border-blue-100'
+                                                            ? 'bg-slate-100 text-slate-400 line-through'
+                                                            : rem.type === 'Medical'
+                                                                ? 'bg-red-50 text-red-700 border-red-100'
+                                                                : 'bg-blue-50 text-blue-700 border-blue-100'
                                                             }`}
                                                         title={rem.title}
                                                     >
@@ -300,6 +395,13 @@ const Reminders = ({ user }) => {
 
             {showAddReminderModal && (
                 <AddReminderModal onClose={() => setShowAddReminderModal(false)} />
+            )}
+
+            {selectedReminder && (
+                <ReminderDetailsModal
+                    reminder={selectedReminder}
+                    onClose={() => setSelectedReminder(null)}
+                />
             )}
         </div>
     );

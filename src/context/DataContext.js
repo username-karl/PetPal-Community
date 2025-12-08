@@ -13,7 +13,21 @@ export const DataProvider = ({ children }) => {
     const [reminders, setReminders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [activePetId, setActivePetId] = useState(null);
+    // Initialize activePetId from localStorage
+    const [activePetId, setActivePetIdState] = useState(() => {
+        const stored = localStorage.getItem('activePetId');
+        return stored ? parseInt(stored, 10) : null;
+    });
+
+    // Wrapper to persist activePetId to localStorage
+    const setActivePetId = useCallback((id) => {
+        setActivePetIdState(id);
+        if (id !== null) {
+            localStorage.setItem('activePetId', id.toString());
+        } else {
+            localStorage.removeItem('activePetId');
+        }
+    }, []);
 
     // Function to fetch pets - can be called manually
     const refreshPets = useCallback(async () => {
@@ -70,12 +84,17 @@ export const DataProvider = ({ children }) => {
         fetchData();
     }, [user, refreshPets]);
 
-    // Set default active pet
+    // Set default active pet (only if no valid stored pet exists)
     useEffect(() => {
-        if (pets.length > 0 && !activePetId) {
-            setActivePetId(pets[0].id);
+        if (pets.length > 0) {
+            // Check if the stored activePetId is valid (exists in pets list)
+            const storedPetExists = pets.some(p => p.id === activePetId);
+            if (!storedPetExists) {
+                // If stored pet doesn't exist, default to first pet
+                setActivePetId(pets[0].id);
+            }
         }
-    }, [pets, activePetId]);
+    }, [pets, activePetId, setActivePetId]);
 
     const createPost = async (post) => {
         try {
