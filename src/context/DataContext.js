@@ -95,8 +95,27 @@ export const DataProvider = ({ children }) => {
         }
     };
 
-    const deleteComment = (postId, commentId) => {
+    const deleteComment = async (postId, commentId) => {
+        // Not implemented on backend yet, preserving API for now
         console.log('deleteComment', postId, commentId);
+    };
+
+    const likePost = async (id) => {
+        try {
+            const updatedPost = await api.likePost(id, user.id);
+            setPosts(posts.map(p => p.id === id ? updatedPost : p));
+        } catch (err) {
+            console.error("Error liking post:", err);
+        }
+    };
+
+    const addComment = async (postId, text) => {
+        try {
+            const updatedPost = await api.addComment(postId, { text }, user.id);
+            setPosts(posts.map(p => p.id === postId ? updatedPost : p));
+        } catch (err) {
+            console.error("Error adding comment:", err);
+        }
     };
 
     const addPet = async (petData) => {
@@ -157,7 +176,7 @@ export const DataProvider = ({ children }) => {
 
     return (
         <DataContext.Provider value={{
-            posts, createPost, deletePost, deleteComment,
+            posts, createPost, deletePost, deleteComment, likePost, addComment,
             pets, addPet, updatePet, deletePet, refreshPets,
             reminders, addReminder, toggleReminder, deleteReminder,
             loading, error,

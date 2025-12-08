@@ -3,24 +3,26 @@ import { Search, Image, Paperclip, MoreHorizontal, Heart, MessageCircle, X } fro
 import { useData } from '../context/DataContext';
 
 const Community = ({ user, onToggleRole }) => {
-  const { posts, createPost, deletePost, deleteComment } = useData();
+  const { posts, createPost, deletePost, deleteComment, likePost, addComment } = useData();
   const [newPostContent, setNewPostContent] = useState('');
+  const [newPostTitle, setNewPostTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!newPostContent.trim()) return;
+    if (!newPostContent.trim() || !newPostTitle.trim()) return;
 
     setIsLoading(true);
     // Simulate slight delay for better UX
     await new Promise(resolve => setTimeout(resolve, 600));
 
     await createPost({
-      title: 'Update', // Simplified since mockup has no title field
+      title: newPostTitle,
       content: newPostContent,
-      category: 'General',
-      author: user.name
+      category: 'General'
+      // author field removed to prevent backend deserialization error (User object expected)
     });
     setNewPostContent('');
+    setNewPostTitle('');
     setIsLoading(false);
   };
 
@@ -37,7 +39,14 @@ const Community = ({ user, onToggleRole }) => {
                 className="w-10 h-10 rounded-full bg-slate-100 ring-1 ring-slate-100"
                 alt="Me"
               />
-              <div className="flex-1">
+              <div className="flex-1 space-y-3">
+                <input
+                  type="text"
+                  value={newPostTitle}
+                  onChange={(e) => setNewPostTitle(e.target.value)}
+                  placeholder="Post Title..."
+                  className="w-full bg-slate-50 border-0 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all placeholder:text-slate-400 font-semibold"
+                />
                 <input
                   type="text"
                   value={newPostContent}
@@ -62,7 +71,7 @@ const Community = ({ user, onToggleRole }) => {
                   </div>
                   <button
                     onClick={handleSubmit}
-                    disabled={isLoading || !newPostContent.trim()}
+                    disabled={isLoading || !newPostContent.trim() || !newPostTitle.trim()}
                     className="bg-slate-900 text-white text-xs font-semibold px-4 py-1.5 rounded-md hover:bg-slate-800 transition-colors disabled:opacity-50"
                   >
                     {isLoading ? 'Posting...' : 'Post'}
@@ -78,12 +87,12 @@ const Community = ({ user, onToggleRole }) => {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <img
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author}`}
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author?.name || post.author || 'User'}`}
                     className="w-10 h-10 rounded-full bg-slate-100"
-                    alt={post.author}
+                    alt={post.author?.name || post.author}
                   />
                   <div>
-                    <h4 className="text-sm font-semibold text-slate-900">{post.author}</h4>
+                    <h4 className="text-sm font-semibold text-slate-900">{post.author?.name || post.author}</h4>
                     <p className="text-xs text-slate-500">
                       {new Date(post.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • <span className="text-blue-600 font-medium">{post.category}</span>
                     </p>
@@ -110,25 +119,46 @@ const Community = ({ user, onToggleRole }) => {
               </p>
 
               <div className="flex items-center gap-4 border-t border-slate-100 pt-3">
-                <button className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-red-500 transition-colors group">
-                  <Heart className="w-4 h-4 group-hover:fill-red-500" /> {post.likes || 24}
+                <button
+                  onClick={() => likePost(post.id)}
+                  className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-red-500 transition-colors group"
+                >
+                  <Heart className={`w-4 h-4 ${post.likes > 0 ? 'fill-red-500 text-red-500' : 'group-hover:fill-red-500'}`} />
+                  {post.likes || 0}
                 </button>
                 <button className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-blue-500 transition-colors">
-                  <MessageCircle className="w-4 h-4" /> {post.comments?.length || 8} Comments
+                  <MessageCircle className="w-4 h-4" /> {post.comments?.length || 0} Comments
                 </button>
               </div>
 
-              {/* Simple Comments Preview */}
-              {post.comments && post.comments.length > 0 && (
-                <div className="mt-4 pt-3 border-t border-slate-50 space-y-3">
-                  {post.comments.slice(0, 2).map((comment, idx) => (
-                    <div key={idx} className="flex gap-2 text-sm">
-                      <span className="font-bold text-slate-800 text-xs">{comment.author}</span>
-                      <span className="text-slate-600 text-xs">{comment.text}</span>
-                    </div>
-                  ))}
+              {/* Comments Section */}
+              <div className="mt-4 pt-3 border-t border-slate-50 space-y-3">
+                {post.comments && post.comments.length > 0 && (
+                  <div className="space-y-3">
+                    {post.comments.map((comment, idx) => (
+                      <div key={idx} className="flex gap-2 text-sm bg-slate-50 p-2 rounded-lg">
+                        <span className="font-bold text-slate-800 text-xs whitespace-nowrap">{comment.author?.name || 'User'}</span>
+                        <span className="text-slate-600 text-xs">{comment.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add Comment Input */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Write a comment..."
+                    className="flex-1 bg-slate-50 border-0 rounded-lg px-3 py-2 text-xs focus:ring-1 focus:ring-slate-200 transition-all placeholder:text-slate-400"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        addComment(post.id, e.target.value);
+                        e.target.value = '';
+                      }
+                    }}
+                  />
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>

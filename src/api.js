@@ -77,6 +77,20 @@ export const api = {
         });
         return response.ok;
     },
+    likePost: async (id, userId) => {
+        const response = await fetch(`${API_URL}/posts/${id}/like?userId=${userId}`, {
+            method: 'PUT',
+        });
+        return handleResponse(response);
+    },
+    addComment: async (postId, comment, userId) => {
+        const response = await fetch(`${API_URL}/posts/${postId}/comments?userId=${userId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(comment),
+        });
+        return handleResponse(response);
+    },
     getReminders: async (petId) => {
         const response = await fetch(`${API_URL}/reminders?petId=${petId}`);
         return handleResponse(response);
