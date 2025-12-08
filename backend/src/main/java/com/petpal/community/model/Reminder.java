@@ -31,7 +31,7 @@ public class Reminder {
 
     private boolean completed;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pet_id", nullable = false)
     @JsonIgnoreProperties({ "reminders", "owner" })
     private Pet pet;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { isToday } from 'date-fns';
+import { isToday, isTomorrow, isPast, differenceInDays, startOfDay, format } from 'date-fns';
 import {
   CheckCircle2,
   ListTodo,
@@ -8,9 +8,36 @@ import {
   Pill,
   Calendar,
   Edit2,
-  PawPrint
+  PawPrint,
+  AlertCircle,
+  Clock
 } from 'lucide-react';
 import { useData } from '../context/DataContext';
+
+// Helper function to get due date info
+const getDueDateInfo = (dateStr, completed = false) => {
+  const date = startOfDay(new Date(dateStr));
+  const today = startOfDay(new Date());
+  const daysDiff = differenceInDays(date, today);
+
+  if (completed) {
+    return { label: format(date, 'MMM d'), bgColor: 'bg-slate-100', textColor: 'text-slate-400', borderColor: 'border-slate-200', icon: null };
+  }
+  if (isToday(date)) {
+    return { label: 'Today', bgColor: 'bg-amber-50', textColor: 'text-amber-700', borderColor: 'border-amber-200', icon: null };
+  }
+  if (isTomorrow(date)) {
+    return { label: 'Tomorrow', bgColor: 'bg-blue-50', textColor: 'text-blue-600', borderColor: 'border-blue-200', icon: null };
+  }
+  if (isPast(date)) {
+    const daysOverdue = Math.abs(daysDiff);
+    return { label: daysOverdue === 1 ? 'Yesterday' : `${daysOverdue}d overdue`, bgColor: 'bg-red-50', textColor: 'text-red-600', borderColor: 'border-red-200', icon: AlertCircle };
+  }
+  if (daysDiff <= 7) {
+    return { label: `In ${daysDiff}d`, bgColor: 'bg-blue-50', textColor: 'text-blue-600', borderColor: 'border-blue-200', icon: null };
+  }
+  return { label: format(date, 'MMM d'), bgColor: 'bg-slate-50', textColor: 'text-slate-600', borderColor: 'border-slate-200', icon: null };
+};
 
 const Dashboard = ({ user }) => {
   const navigate = useNavigate();
@@ -147,7 +174,20 @@ const Dashboard = ({ user }) => {
                   </div>
                   <div className="flex-1">
                     <h4 className="text-sm font-medium text-slate-900">{reminder.title}</h4>
-                    <p className="text-xs text-slate-500">{reminder.type} • {new Date(reminder.date).toLocaleDateString()}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs text-slate-500">{reminder.type}</span>
+                      {(() => {
+                        const dueInfo = getDueDateInfo(reminder.date);
+                        const IconComponent = dueInfo.icon;
+                        return (
+                          <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border ${dueInfo.bgColor} ${dueInfo.textColor} ${dueInfo.borderColor}`}>
+                            {IconComponent && <IconComponent className="w-2.5 h-2.5" />}
+                            <Clock className="w-2.5 h-2.5" />
+                            {dueInfo.label}
+                          </span>
+                        );
+                      })()}
+                    </div>
                   </div>
                   <div className="w-5 h-5 rounded-full border-2 border-slate-200 hover:border-slate-900 hover:bg-slate-900 cursor-pointer transition-all"></div>
                 </div>
@@ -160,7 +200,20 @@ const Dashboard = ({ user }) => {
                   </div>
                   <div className="flex-1">
                     <h4 className="text-sm font-medium text-slate-900">{reminder.title}</h4>
-                    <p className="text-xs text-slate-500">{reminder.type} • {new Date(reminder.date).toLocaleDateString()}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs text-slate-500">{reminder.type}</span>
+                      {(() => {
+                        const dueInfo = getDueDateInfo(reminder.date);
+                        const IconComponent = dueInfo.icon;
+                        return (
+                          <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border ${dueInfo.bgColor} ${dueInfo.textColor} ${dueInfo.borderColor}`}>
+                            {IconComponent && <IconComponent className="w-2.5 h-2.5" />}
+                            <Clock className="w-2.5 h-2.5" />
+                            {dueInfo.label}
+                          </span>
+                        );
+                      })()}
+                    </div>
                   </div>
                 </div>
               ))
