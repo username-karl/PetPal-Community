@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PawPrint, Heart, Calendar, Plus } from 'lucide-react';
+import { PawPrint, Heart, Calendar, Plus, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { StatusBadge, getPetEmoji } from '../components/Shared';
 import { useData } from '../context/DataContext';
@@ -8,7 +8,7 @@ import Card from '../components/Card';
 
 const MyPets = ({ onAddPetClick }) => {
   const navigate = useNavigate();
-  const { pets, reminders } = useData();
+  const { pets, reminders, loading, error } = useData();
 
   const getPetReminders = (petId) =>
     reminders
@@ -30,6 +30,37 @@ const MyPets = ({ onAddPetClick }) => {
     show: { opacity: 1, y: 0 }
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <Loader2 className="w-12 h-12 text-indigo-500" />
+        </motion.div>
+        <p className="text-slate-500 mt-4">Loading your pets...</p>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center space-y-4 bg-white rounded-3xl border border-red-200 p-12">
+        <div className="w-16 h-16 rounded-full bg-red-50 text-red-500 flex items-center justify-center">
+          <PawPrint className="w-8 h-8" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-red-600">Error Loading Pets</h2>
+          <p className="text-slate-500 mt-2">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state
   if (!pets?.length) {
     return (
       <motion.div
@@ -59,6 +90,7 @@ const MyPets = ({ onAddPetClick }) => {
     );
   }
 
+  // Show pets list
   return (
     <motion.div
       variants={container}
@@ -169,4 +201,3 @@ const MyPets = ({ onAddPetClick }) => {
 };
 
 export default MyPets;
-
