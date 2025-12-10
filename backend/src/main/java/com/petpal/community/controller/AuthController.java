@@ -33,7 +33,7 @@ public class AuthController {
     public ResponseEntity<?> registerAdmin(@RequestBody Map<String, Object> payload) {
         try {
             String adminCode = (String) payload.get("adminCode");
-            if (!"PETPAL_ADMIN_2024".equals(adminCode)) {
+            if (!"PETPAL_ADMIN_2025".equals(adminCode)) {
                 return ResponseEntity.status(403).body("Invalid admin code");
             }
 
