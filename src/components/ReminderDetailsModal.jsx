@@ -48,6 +48,7 @@ const ReminderDetailsModal = ({ reminder, onClose }) => {
 
     const handleToggle = () => {
         toggleReminder(reminder.id);
+        onClose(); // Close modal so UI refreshes with updated state
     };
 
     const handleDelete = () => {
@@ -94,9 +95,9 @@ const ReminderDetailsModal = ({ reminder, onClose }) => {
 
                     {/* Type badge */}
                     <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-medium border ${reminder.type === 'Medical' ? 'bg-red-50 text-red-600 border-red-100' :
-                            reminder.type === 'Grooming' ? 'bg-purple-50 text-purple-600 border-purple-100' :
-                                reminder.type === 'Vaccination' ? 'bg-green-50 text-green-600 border-green-100' :
-                                    'bg-blue-50 text-blue-600 border-blue-100'
+                        reminder.type === 'Grooming' ? 'bg-purple-50 text-purple-600 border-purple-100' :
+                            reminder.type === 'Vaccination' ? 'bg-green-50 text-green-600 border-green-100' :
+                                'bg-blue-50 text-blue-600 border-blue-100'
                         }`}>
                         {reminder.type}
                     </span>
@@ -158,8 +159,8 @@ const ReminderDetailsModal = ({ reminder, onClose }) => {
                     <button
                         onClick={handleToggle}
                         className={`flex-1 py-3 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 ${reminder.completed
-                                ? 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                                : 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-200'
+                            ? 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                            : 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg shadow-emerald-200'
                             }`}
                     >
                         <CheckCircle2 className="w-4 h-4" />

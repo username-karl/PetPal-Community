@@ -244,7 +244,7 @@ const Profile = ({ user, onUpdateUser }) => {
             </div>
 
             <p className="text-center text-xs text-slate-300 font-medium mt-12 pb-6">
-                PetPal Community v1.2.0 • Build 2024
+                PetPal Community v1.2.0 • Build 2025
             </p>
         </div>
     );

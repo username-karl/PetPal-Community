@@ -9,6 +9,7 @@ export const useData = () => useContext(DataContext);
 export const DataProvider = ({ children }) => {
     const { user } = useAuth();
     const [posts, setPosts] = useState([]);
+    const [pendingPosts, setPendingPosts] = useState([]);
     const [pets, setPets] = useState([]);
     const [reminders, setReminders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -70,7 +71,7 @@ export const DataProvider = ({ children }) => {
             console.log("DataContext: Fetching data. User:", user);
 
             try {
-                const fetchedPosts = await api.getPosts();
+                const fetchedPosts = await api.getPosts(user?.id);
                 setPosts(fetchedPosts || []);
             } catch (err) {
                 console.error("Error fetching posts:", err);
@@ -107,8 +108,9 @@ export const DataProvider = ({ children }) => {
 
     const deletePost = async (id) => {
         try {
-            await api.deletePost(id);
+            await api.deletePost(id, user.id);
             setPosts(posts.filter(p => p.id !== id));
+            setPendingPosts(pendingPosts.filter(p => p.id !== id));
         } catch (err) {
             console.error("Error deleting post:", err);
         }
@@ -145,6 +147,38 @@ export const DataProvider = ({ children }) => {
             setPosts(posts.map(p => p.id === postId ? updatedPost : p));
         } catch (err) {
             console.error("Error adding comment:", err);
+        }
+    };
+
+    // Moderation functions (admin only)
+    const refreshPendingPosts = async () => {
+        try {
+            const fetchedPending = await api.getPendingPosts();
+            setPendingPosts(fetchedPending || []);
+        } catch (err) {
+            console.error("Error fetching pending posts:", err);
+        }
+    };
+
+    const approvePost = async (id) => {
+        try {
+            const approvedPost = await api.approvePost(id);
+            setPendingPosts(pendingPosts.filter(p => p.id !== id));
+            setPosts([approvedPost, ...posts]);
+            return approvedPost;
+        } catch (err) {
+            console.error("Error approving post:", err);
+            throw err;
+        }
+    };
+
+    const rejectPost = async (id) => {
+        try {
+            await api.rejectPost(id);
+            setPendingPosts(pendingPosts.filter(p => p.id !== id));
+        } catch (err) {
+            console.error("Error rejecting post:", err);
+            throw err;
         }
     };
 
@@ -207,6 +241,7 @@ export const DataProvider = ({ children }) => {
     return (
         <DataContext.Provider value={{
             posts, createPost, deletePost, updatePost, deleteComment, likePost, addComment,
+            pendingPosts, refreshPendingPosts, approvePost, rejectPost,
             pets, addPet, updatePet, deletePet, refreshPets,
             reminders, addReminder, toggleReminder, deleteReminder,
             loading, error,

@@ -16,6 +16,19 @@ public class PostService {
         return postRepository.findAllByOrderByTimestampDesc();
     }
 
+    public List<Post> getApprovedPosts() {
+        return postRepository.findByStatusOrderByTimestampDesc("APPROVED");
+    }
+
+    public List<Post> getPendingPosts() {
+        return postRepository.findByStatusOrderByTimestampDesc("PENDING");
+    }
+
+    public List<Post> getVisiblePostsForUser(Long userId) {
+        // Returns approved posts + user's own posts (regardless of status)
+        return postRepository.findByStatusOrAuthor_IdOrderByTimestampDesc("APPROVED", userId);
+    }
+
     public Post createPost(Post post) {
         return postRepository.save(post);
     }
@@ -34,5 +47,17 @@ public class PostService {
 
     public List<Post> getPostsByUserId(Long userId) {
         return postRepository.findByAuthor_IdOrderByTimestampDesc(userId);
+    }
+
+    public Post approvePost(Long id) {
+        Post post = getPostById(id);
+        post.setStatus("APPROVED");
+        return postRepository.save(post);
+    }
+
+    public Post rejectPost(Long id) {
+        Post post = getPostById(id);
+        post.setStatus("REJECTED");
+        return postRepository.save(post);
     }
 }

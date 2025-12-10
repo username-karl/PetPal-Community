@@ -2,6 +2,7 @@ package com.petpal.community.controller;
 
 import com.petpal.community.model.Post;
 import com.petpal.community.model.PostLike;
+import com.petpal.community.model.User;
 import com.petpal.community.repository.PostLikeRepository;
 import com.petpal.community.service.PostService;
 import com.petpal.community.service.UserService;
@@ -26,20 +27,51 @@ public class PostController {
     private PostLikeRepository postLikeRepository;
 
     @GetMapping
-    public List<Post> getAllPosts() {
-        return postService.getAllPosts();
+    public List<Post> getAllPosts(@RequestParam(required = false) Long userId) {
+        if (userId != null) {
+            // Return approved posts + user's own posts (regardless of status)
+            return postService.getVisiblePostsForUser(userId);
+        }
+        // Default: return only approved posts
+        return postService.getApprovedPosts();
+    }
+
+    @GetMapping("/pending")
+    public List<Post> getPendingPosts() {
+        return postService.getPendingPosts();
     }
 
     @PostMapping
     public ResponseEntity<Post> createPost(@RequestBody Post post, @RequestParam Long userId) {
         return userService.findById(userId).map(user -> {
             post.setAuthor(user);
+            // Admin posts are auto-approved
+            if ("Admin".equals(user.getRole())) {
+                post.setStatus("APPROVED");
+            } else {
+                post.setStatus("PENDING");
+            }
             return ResponseEntity.ok(postService.createPost(post));
         }).orElse(ResponseEntity.badRequest().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable Long id) {
+    public ResponseEntity<?> deletePost(@PathVariable Long id, @RequestParam(required = false) Long userId) {
+        if (userId != null) {
+            // Check if user is admin or owner
+            return userService.findById(userId).map(user -> {
+                Post post = postService.getPostById(id);
+                boolean isAdmin = "Admin".equals(user.getRole());
+                boolean isOwner = post.getAuthor() != null && post.getAuthor().getId().equals(userId);
+
+                if (isAdmin || isOwner) {
+                    postService.deletePost(id);
+                    return ResponseEntity.ok().build();
+                }
+                return ResponseEntity.status(403).body("Not authorized to delete this post");
+            }).orElse(ResponseEntity.badRequest().build());
+        }
+        // Fallback for backward compatibility
         postService.deletePost(id);
         return ResponseEntity.ok().build();
     }
@@ -62,6 +94,16 @@ public class PostController {
             existingPost.setCategory(updatedPost.getCategory());
         }
         return ResponseEntity.ok(postService.savePost(existingPost));
+    }
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<Post> approvePost(@PathVariable Long id) {
+        return ResponseEntity.ok(postService.approvePost(id));
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<Post> rejectPost(@PathVariable Long id) {
+        return ResponseEntity.ok(postService.rejectPost(id));
     }
 
     @GetMapping("/user/{userId}")

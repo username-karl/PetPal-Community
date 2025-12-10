@@ -29,6 +29,35 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/register/admin")
+    public ResponseEntity<?> registerAdmin(@RequestBody Map<String, Object> payload) {
+        try {
+            String adminCode = (String) payload.get("adminCode");
+            if (!"PETPAL_ADMIN_2025".equals(adminCode)) {
+                return ResponseEntity.status(403).body("Invalid admin code");
+            }
+
+            String email = (String) payload.get("email");
+            String password = (String) payload.get("password");
+            String name = (String) payload.get("name");
+
+            if (userService.login(email, password).isPresent()) {
+                return ResponseEntity.badRequest().body("User already exists");
+            }
+
+            User user = new User();
+            user.setEmail(email);
+            user.setPassword(password);
+            user.setName(name);
+            user.setRole("Admin");
+
+            return ResponseEntity.ok(userService.registerUser(user));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
         String email = credentials.get("email");

@@ -29,6 +29,9 @@ public class Post {
 
     private int likes;
 
+    @Column(nullable = false)
+    private String status = "PENDING"; // PENDING, APPROVED, REJECTED
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
