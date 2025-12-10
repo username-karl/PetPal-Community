@@ -56,7 +56,7 @@ const Login = ({ onLogin }) => {
 
                 {/* Copyright */}
                 <div className="z-10 text-xs text-zinc-500">
-                    © 2024 PetPal Inc. All rights reserved.
+                    © 2025 PetPal Inc. All rights reserved.
                 </div>
 
                 {/* Decorative Gradients */}
