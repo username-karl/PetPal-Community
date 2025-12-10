@@ -27,7 +27,7 @@ const ProtectedRoute = ({ children, isAuthenticated }) => {
 };
 
 const App = () => {
-  const { user, login, logout, register, setUser } = useAuth();
+  const { user, login, logout, register, registerAdmin, setUser } = useAuth();
   const [isAddingPet, setIsAddingPet] = React.useState(false);
 
   const handleLogin = async (email, password) => {
@@ -36,6 +36,10 @@ const App = () => {
 
   const handleRegister = async (userData) => {
     await register(userData);
+  };
+
+  const handleRegisterAdmin = async (userData) => {
+    await registerAdmin(userData);
   };
 
   const handleUpdateUser = async (data) => {
@@ -74,7 +78,7 @@ const App = () => {
             isAuthenticated ? (
               <Navigate to="/" replace />
             ) : (
-              <Register onRegister={handleRegister} />
+              <Register onRegister={handleRegister} onRegisterAdmin={handleRegisterAdmin} />
             )
           }
         />
@@ -85,7 +89,7 @@ const App = () => {
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <Layout
-                isModerator={user?.role === 'Moderator'}
+                isModerator={user?.role === 'Moderator' || user?.role === 'Admin'}
                 userName={user?.name}
                 userRole={user?.role}
                 userAvatar={user?.avatarUrl}
@@ -104,7 +108,12 @@ const App = () => {
                       />
                     }
                   />
-                  <Route path="/moderation" element={<Moderation />} />
+                  <Route
+                    path="/moderation"
+                    element={
+                      user?.role === 'Admin' ? <Moderation user={user} /> : <Navigate to="/" replace />
+                    }
+                  />
                   <Route path="/reminders" element={<Reminders />} />
                   <Route
                     path="/settings"

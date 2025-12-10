@@ -8,4 +8,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findAllByOrderByTimestampDesc();
 
     List<Post> findByAuthor_IdOrderByTimestampDesc(Long userId);
+
+    List<Post> findByStatusOrderByTimestampDesc(String status);
+
+    List<Post> findByStatusOrAuthor_IdOrderByTimestampDesc(String status, Long authorId);
 }

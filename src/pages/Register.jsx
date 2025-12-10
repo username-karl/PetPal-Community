@@ -1,33 +1,58 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PawPrint, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
+import { PawPrint, ArrowRight, Loader2, CheckCircle2, Shield } from 'lucide-react';
 
-const Register = ({ onRegister }) => {
+const Register = ({ onRegister, onRegisterAdmin }) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        adminCode: ''
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [isAdminMode, setIsAdminMode] = useState(false);
+    const [error, setError] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords don't match!");
+            setError("Passwords don't match!");
+            return;
+        }
+
+        if (isAdminMode && !formData.adminCode.trim()) {
+            setError("Admin code is required for admin registration");
             return;
         }
 
         setIsLoading(true);
-        // Simulate network delay for UX
-        await new Promise(resolve => setTimeout(resolve, 800));
-        await onRegister({
-            name: formData.name,
-            email: formData.email,
-            password: formData.password
-        });
+        try {
+            // Simulate network delay for UX
+            await new Promise(resolve => setTimeout(resolve, 800));
+
+            if (isAdminMode) {
+                await onRegisterAdmin({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                    adminCode: formData.adminCode
+                });
+            } else {
+                await onRegister({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password
+                });
+            }
+        } catch (err) {
+            setError(err.message || 'Registration failed. Please try again.');
+        }
         setIsLoading(false);
     };
+
 
     return (
         <div className="h-screen overflow-hidden flex bg-white text-zinc-900 font-sans selection:bg-zinc-900 selection:text-white">
@@ -167,7 +192,49 @@ const Register = ({ onRegister }) => {
                                     />
                                 </div>
                             </div>
+
+                            {/* Admin Registration Toggle */}
+                            <div className="flex items-center gap-3 p-3 bg-zinc-50 rounded-xl border border-zinc-200">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsAdminMode(!isAdminMode)}
+                                    className={`relative w-10 h-6 rounded-full transition-colors ${isAdminMode ? 'bg-indigo-600' : 'bg-zinc-300'}`}
+                                >
+                                    <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${isAdminMode ? 'translate-x-4' : ''}`} />
+                                </button>
+                                <div className="flex items-center gap-2">
+                                    <Shield className={`w-4 h-4 ${isAdminMode ? 'text-indigo-600' : 'text-zinc-400'}`} />
+                                    <span className={`text-sm font-medium ${isAdminMode ? 'text-indigo-600' : 'text-zinc-500'}`}>
+                                        Register as Admin
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Admin Code Input (shown when admin mode is active) */}
+                            {isAdminMode && (
+                                <div className="space-y-2">
+                                    <label className="text-xs font-semibold uppercase tracking-wider text-zinc-500" htmlFor="adminCode">
+                                        Admin Code
+                                    </label>
+                                    <input
+                                        id="adminCode"
+                                        type="password"
+                                        value={formData.adminCode}
+                                        onChange={(e) => setFormData({ ...formData, adminCode: e.target.value })}
+                                        className="w-full bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-indigo-300 font-medium text-indigo-900"
+                                        placeholder="Enter admin access code"
+                                    />
+                                </div>
+                            )}
+
+                            {/* Error Message */}
+                            {error && (
+                                <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium">
+                                    {error}
+                                </div>
+                            )}
                         </div>
+
 
                         <button
                             type="submit"

@@ -25,6 +25,14 @@ export const api = {
         });
         return handleResponse(response);
     },
+    registerAdmin: async (data) => {
+        const response = await fetch(`${API_URL}/auth/register/admin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+        return handleResponse(response);
+    },
     updateUser: async (userId, data) => {
         const response = await fetch(`${API_URL}/auth/user/${userId}`, {
             method: 'PUT',
@@ -59,8 +67,25 @@ export const api = {
         });
         return response.ok;
     },
-    getPosts: async () => {
-        const response = await fetch(`${API_URL}/posts`);
+    getPosts: async (userId) => {
+        const url = userId ? `${API_URL}/posts?userId=${userId}` : `${API_URL}/posts`;
+        const response = await fetch(url);
+        return handleResponse(response);
+    },
+    getPendingPosts: async () => {
+        const response = await fetch(`${API_URL}/posts/pending`);
+        return handleResponse(response);
+    },
+    approvePost: async (id) => {
+        const response = await fetch(`${API_URL}/posts/${id}/approve`, {
+            method: 'PUT',
+        });
+        return handleResponse(response);
+    },
+    rejectPost: async (id) => {
+        const response = await fetch(`${API_URL}/posts/${id}/reject`, {
+            method: 'PUT',
+        });
         return handleResponse(response);
     },
     createPost: async (post, userId) => {
@@ -71,8 +96,9 @@ export const api = {
         });
         return handleResponse(response);
     },
-    deletePost: async (id) => {
-        const response = await fetch(`${API_URL}/posts/${id}`, {
+    deletePost: async (id, userId) => {
+        const url = userId ? `${API_URL}/posts/${id}?userId=${userId}` : `${API_URL}/posts/${id}`;
+        const response = await fetch(url, {
             method: 'DELETE',
         });
         return response.ok;

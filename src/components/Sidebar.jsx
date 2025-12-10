@@ -7,7 +7,8 @@ import {
     Dog,
     ChevronRight,
     PawPrint,
-    LogOut
+    LogOut,
+    ShieldAlert
 } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 
@@ -15,6 +16,7 @@ const Sidebar = ({ userName, userRole, onLogout }) => {
     const location = useLocation();
     const navigate = useNavigate();
     const { logout } = useAuth();
+    const isAdmin = userRole === 'Admin';
 
     const handleLogout = () => {
         if (onLogout) {
@@ -28,9 +30,11 @@ const Sidebar = ({ userName, userRole, onLogout }) => {
     const navItems = [
         { path: '/', label: 'Dashboard', icon: LayoutGrid },
         { path: '/reminders', label: 'My Reminders', icon: CheckCircle2 },
-        { path: '/community', label: 'Community', icon: Users, badge: 3 },
+        { path: '/community', label: 'Community', icon: Users },
         { path: '/pets', label: 'My Pets', icon: Dog },
+        ...(isAdmin ? [{ path: '/moderation', label: 'Moderation', icon: ShieldAlert }] : []),
     ];
+
 
     const isActive = (path) => {
         if (path === '/') return location.pathname === '/';
