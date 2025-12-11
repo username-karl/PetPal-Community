@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dog, Cat, Plus, Loader2, Edit2, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useData } from '../context/DataContext';
+import EditPetModal from '../components/EditPetModal';
 
 const MyPets = ({ onAddPetClick }) => {
   const navigate = useNavigate();
   const { pets, loading, error, activePetId, setActivePetId } = useData();
+  const [editingPet, setEditingPet] = useState(null);
 
   // Show loading state
   if (loading) {
@@ -123,7 +125,7 @@ const MyPets = ({ onAddPetClick }) => {
                     View Details
                   </button>
                   <button
-                    onClick={() => navigate(`/profile`)}
+                    onClick={() => setEditingPet(pet)}
                     className="p-2 bg-white border border-slate-200 text-slate-400 rounded-lg hover:text-slate-900 hover:border-slate-300 transition-colors"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
@@ -148,6 +150,14 @@ const MyPets = ({ onAddPetClick }) => {
             <p className="text-xs text-slate-500 mt-1 max-w-[150px]">Track another furry friend's health and schedule</p>
           </motion.div>
         </div>
+      )}
+
+      {/* Edit Pet Modal */}
+      {editingPet && (
+        <EditPetModal
+          pet={editingPet}
+          onClose={() => setEditingPet(null)}
+        />
       )}
     </div>
   );

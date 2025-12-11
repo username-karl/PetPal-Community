@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -12,7 +13,8 @@ import {
     ChevronRight,
     Filter,
     Plus,
-    AlertCircle
+    AlertCircle,
+    PawPrint
 } from 'lucide-react';
 import {
     format,
@@ -108,12 +110,21 @@ const getDueDateInfo = (dateStr, completed) => {
 };
 
 const Reminders = ({ user }) => {
+    const location = useLocation();
     const { reminders, toggleReminder, deleteReminder, pets } = useData();
     const [filter, setFilter] = useState('all');
-    const [viewMode, setViewMode] = useState('list'); // 'list' | 'calendar'
+    const [viewMode, setViewMode] = useState(location.state?.viewMode || 'list');
     const [currentDate, setCurrentDate] = useState(new Date());
     const [showAddReminderModal, setShowAddReminderModal] = useState(false);
     const [selectedReminder, setSelectedReminder] = useState(null);
+    const [selectedDay, setSelectedDay] = useState(null);
+
+    // Update viewMode if coming from navigation with state
+    useEffect(() => {
+        if (location.state?.viewMode) {
+            setViewMode(location.state.viewMode);
+        }
+    }, [location.state]);
 
     // --- Calendar Logic ---
     const headerDate = format(currentDate, "MMMM yyyy");
@@ -310,83 +321,188 @@ const Reminders = ({ user }) => {
                         </div>
                     ) : (
                         // --- CALENDAR VIEW ---
-                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[600px] md:h-auto">
+                        <div className="flex gap-6">
+                            {/* Calendar Grid */}
+                            <div className="flex-1 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                                {/* Calendar Header */}
+                                <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-slate-50 to-white">
+                                    <div className="flex items-center gap-4">
+                                        <h3 className="text-xl font-bold text-slate-900 min-w-[180px]">{headerDate}</h3>
+                                        <div className="flex items-center bg-slate-100 rounded-lg p-0.5">
+                                            <button onClick={prevMonth} className="p-2 hover:bg-white hover:shadow-sm rounded-md transition-all text-slate-600">
+                                                <ChevronLeft className="w-4 h-4" />
+                                            </button>
+                                            <button onClick={nextMonth} className="p-2 hover:bg-white hover:shadow-sm rounded-md transition-all text-slate-600">
+                                                <ChevronRight className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={goToToday}
+                                        className="text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg transition-colors"
+                                    >
+                                        Today
+                                    </button>
+                                </div>
 
-                            {/* Calendar Header */}
-                            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <h3 className="text-lg font-bold text-slate-900 w-40">{headerDate}</h3>
-                                    <div className="flex items-center bg-slate-100 rounded-lg p-0.5">
-                                        <button onClick={prevMonth} className="p-1.5 hover:bg-white hover:shadow-sm rounded-md transition-all text-slate-600">
-                                            <ChevronLeft className="w-4 h-4" />
-                                        </button>
-                                        <button onClick={nextMonth} className="p-1.5 hover:bg-white hover:shadow-sm rounded-md transition-all text-slate-600">
-                                            <ChevronRight className="w-4 h-4" />
-                                        </button>
+                                {/* Days Header */}
+                                <div className="grid grid-cols-7 border-b border-slate-100 bg-slate-50">
+                                    {weekDays.map(day => (
+                                        <div key={day} className="py-3 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                            {day}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Days Grid */}
+                                <div className="grid grid-cols-7">
+                                    {calendarDays.map((day, dayIdx) => {
+                                        const dayReminders = getRemindersForDate(day);
+                                        const isCurrentMonth = isSameMonth(day, currentDate);
+                                        const isDayToday = isToday(day);
+                                        const isSelected = selectedDay && isSameDay(day, selectedDay);
+                                        const hasReminders = dayReminders.length > 0;
+                                        const hasOverdue = dayReminders.some(r => !r.completed && isPast(new Date(r.date)) && !isToday(new Date(r.date)));
+                                        const hasCompleted = dayReminders.every(r => r.completed) && hasReminders;
+
+                                        return (
+                                            <div
+                                                key={day.toString()}
+                                                onClick={() => setSelectedDay(day)}
+                                                className={`min-h-[110px] p-2 border-b border-r border-slate-100 relative cursor-pointer transition-all
+                                                    ${!isCurrentMonth ? 'bg-slate-50/50' : 'bg-white hover:bg-slate-50'}
+                                                    ${isDayToday ? 'bg-blue-50/50' : ''}
+                                                    ${isSelected ? 'bg-slate-100 ring-2 ring-slate-900 ring-inset' : ''}
+                                                `}
+                                            >
+                                                {/* Day Number */}
+                                                <div className="flex justify-between items-start mb-1">
+                                                    <span className={`text-sm font-semibold w-7 h-7 flex items-center justify-center rounded-full transition-colors
+                                                        ${isDayToday ? 'bg-slate-900 text-white' : ''}
+                                                        ${!isCurrentMonth ? 'text-slate-300' : 'text-slate-700'}
+                                                        ${isSelected && !isDayToday ? 'bg-slate-200' : ''}
+                                                    `}>
+                                                        {format(day, 'd')}
+                                                    </span>
+                                                    {/* Indicator dots */}
+                                                    {hasReminders && (
+                                                        <div className="flex gap-0.5">
+                                                            {hasOverdue && <span className="w-2 h-2 rounded-full bg-red-500"></span>}
+                                                            {!hasOverdue && !hasCompleted && <span className="w-2 h-2 rounded-full bg-blue-500"></span>}
+                                                            {hasCompleted && <span className="w-2 h-2 rounded-full bg-emerald-500"></span>}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Reminder Pills */}
+                                                <div className="space-y-1">
+                                                    {dayReminders.slice(0, 2).map((rem, i) => {
+                                                        const typeColors = {
+                                                            'Medical': 'bg-red-100 text-red-700 border-red-200',
+                                                            'Vaccination': 'bg-green-100 text-green-700 border-green-200',
+                                                            'Vet Visit': 'bg-red-100 text-red-700 border-red-200',
+                                                            'Medication': 'bg-blue-100 text-blue-700 border-blue-200',
+                                                            'Grooming': 'bg-purple-100 text-purple-700 border-purple-200',
+                                                            'Routine': 'bg-orange-100 text-orange-700 border-orange-200',
+                                                        };
+                                                        const colorClass = rem.completed
+                                                            ? 'bg-slate-100 text-slate-400 line-through border-slate-200'
+                                                            : (typeColors[rem.type] || 'bg-slate-100 text-slate-600 border-slate-200');
+
+                                                        return (
+                                                            <div
+                                                                key={i}
+                                                                onClick={(e) => { e.stopPropagation(); setSelectedReminder(rem); }}
+                                                                className={`text-[10px] truncate px-1.5 py-0.5 rounded border cursor-pointer hover:opacity-80 transition-opacity ${colorClass}`}
+                                                                title={rem.title}
+                                                            >
+                                                                {rem.title}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                    {dayReminders.length > 2 && (
+                                                        <div className="text-[10px] text-slate-400 font-medium pl-1">
+                                                            +{dayReminders.length - 2} more
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Selected Day Detail Panel */}
+                            <div className="w-80 flex-shrink-0 hidden lg:block">
+                                <div className="bg-white rounded-xl border border-slate-200 shadow-sm sticky top-6">
+                                    {/* Panel Header */}
+                                    <div className="p-4 border-b border-slate-100">
+                                        <h4 className="font-semibold text-slate-900">
+                                            {selectedDay ? format(selectedDay, 'EEEE, MMM d') : format(new Date(), 'EEEE, MMM d')}
+                                        </h4>
+                                        <p className="text-xs text-slate-500 mt-0.5">
+                                            {getRemindersForDate(selectedDay || new Date()).length} reminders
+                                        </p>
+                                    </div>
+
+                                    {/* Day's Reminders */}
+                                    <div className="max-h-[400px] overflow-y-auto">
+                                        {getRemindersForDate(selectedDay || new Date()).length > 0 ? (
+                                            getRemindersForDate(selectedDay || new Date()).map((reminder) => {
+                                                const pet = pets.find(p => p.id === reminder.petId);
+                                                return (
+                                                    <div
+                                                        key={reminder.id}
+                                                        onClick={() => setSelectedReminder(reminder)}
+                                                        className={`p-4 border-b border-slate-100 last:border-0 hover:bg-slate-50 cursor-pointer transition-colors ${reminder.completed ? 'opacity-60' : ''}`}
+                                                    >
+                                                        <div className="flex items-start gap-3">
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); toggleReminder(reminder.id); }}
+                                                                className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors mt-0.5 ${reminder.completed
+                                                                    ? 'bg-emerald-500 border-emerald-500 text-white'
+                                                                    : 'border-slate-300 hover:border-slate-400'
+                                                                    }`}
+                                                            >
+                                                                {reminder.completed && <CheckCircle2 className="w-3 h-3" />}
+                                                            </button>
+                                                            <div className="flex-1 min-w-0">
+                                                                <h5 className={`text-sm font-medium truncate ${reminder.completed ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
+                                                                    {reminder.title}
+                                                                </h5>
+                                                                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                                                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${reminder.type === 'Medical' ? 'bg-red-50 text-red-600' :
+                                                                            reminder.type === 'Vaccination' ? 'bg-green-50 text-green-600' :
+                                                                                reminder.type === 'Grooming' ? 'bg-purple-50 text-purple-600' :
+                                                                                    'bg-blue-50 text-blue-600'
+                                                                        }`}>
+                                                                        {reminder.type}
+                                                                    </span>
+                                                                    {pet && (
+                                                                        <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                                                                            <PawPrint className="w-3 h-3" /> {pet.name}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })
+                                        ) : (
+                                            <div className="p-8 text-center">
+                                                <CalendarIcon className="w-10 h-10 mx-auto mb-3 text-slate-200" />
+                                                <p className="text-slate-400 text-sm">No reminders for this day</p>
+                                                <button
+                                                    onClick={() => setShowAddReminderModal(true)}
+                                                    className="mt-3 text-xs font-medium text-slate-600 hover:text-slate-900 flex items-center gap-1 mx-auto"
+                                                >
+                                                    <Plus className="w-3 h-3" /> Add reminder
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                                <button
-                                    onClick={goToToday}
-                                    className="text-xs font-semibold text-primary hover:text-primary-dark border border-primary/20 px-3 py-1.5 rounded-lg hover:bg-primary/5 transition-colors"
-                                >
-                                    Today
-                                </button>
-                            </div>
-
-                            {/* Days Header */}
-                            <div className="grid grid-cols-7 border-b border-slate-100 bg-slate-50">
-                                {weekDays.map(day => (
-                                    <div key={day} className="py-2 text-center text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                        {day}
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Days Grid */}
-                            <div className="grid grid-cols-7 auto-rows-fr h-full">
-                                {calendarDays.map((day, dayIdx) => {
-                                    const dayReminders = getRemindersForDate(day);
-                                    const isCurrentMonth = isSameMonth(day, currentDate);
-                                    const isDayToday = isToday(day);
-
-                                    return (
-                                        <div
-                                            key={day.toString()}
-                                            className={`min-h-[100px] p-2 border-b border-r border-slate-100 relative group transition-colors ${!isCurrentMonth ? 'bg-slate-50/50 text-slate-400' : 'bg-white'
-                                                } ${isDayToday ? 'bg-primary/5' : ''}`}
-                                        >
-                                            <div className="flex justify-between items-start">
-                                                <span className={`text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full ${isDayToday ? 'bg-primary text-white' : 'text-slate-700'
-                                                    }`}>
-                                                    {format(day, 'd')}
-                                                </span>
-                                            </div>
-
-                                            {/* Reminder Dots/Pills */}
-                                            <div className="mt-2 space-y-1">
-                                                {dayReminders.slice(0, 3).map((rem, i) => (
-                                                    <div
-                                                        key={i}
-                                                        className={`text-[10px] truncate px-1.5 py-0.5 rounded border border-transparent ${rem.completed
-                                                            ? 'bg-slate-100 text-slate-400 line-through'
-                                                            : rem.type === 'Medical'
-                                                                ? 'bg-red-50 text-red-700 border-red-100'
-                                                                : 'bg-blue-50 text-blue-700 border-blue-100'
-                                                            }`}
-                                                        title={rem.title}
-                                                    >
-                                                        {rem.title}
-                                                    </div>
-                                                ))}
-                                                {dayReminders.length > 3 && (
-                                                    <div className="text-[10px] text-slate-400 pl-1">
-                                                        +{dayReminders.length - 3} more
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
                             </div>
                         </div>
                     )}

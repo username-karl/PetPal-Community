@@ -29,6 +29,8 @@ public class Post {
 
     private int likes;
 
+    private int views;
+
     @Column(nullable = false)
     private String status = "PENDING"; // PENDING, APPROVED, REJECTED
 
