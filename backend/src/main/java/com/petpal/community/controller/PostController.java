@@ -27,13 +27,55 @@ public class PostController {
     private PostLikeRepository postLikeRepository;
 
     @GetMapping
-    public List<Post> getAllPosts(@RequestParam(required = false) Long userId) {
+    public List<Post> getAllPosts(@RequestParam(required = false) Long userId,
+            @RequestParam(required = false, defaultValue = "newest") String sort) {
+        List<Post> posts;
         if (userId != null) {
             // Return approved posts + user's own posts (regardless of status)
-            return postService.getVisiblePostsForUser(userId);
+            posts = postService.getVisiblePostsForUser(userId);
+        } else {
+            // Default: return only approved posts
+            posts = postService.getApprovedPosts();
         }
-        // Default: return only approved posts
-        return postService.getApprovedPosts();
+
+        // Sort posts based on parameter
+        switch (sort) {
+            case "popular":
+                posts.sort((a, b) -> Integer.compare(b.getLikes(), a.getLikes()));
+                break;
+            case "hot":
+                posts.sort((a, b) -> Integer.compare(
+                        b.getComments() != null ? b.getComments().size() : 0,
+                        a.getComments() != null ? a.getComments().size() : 0));
+                break;
+            case "views":
+                posts.sort((a, b) -> Integer.compare(b.getViews(), a.getViews()));
+                break;
+            case "newest":
+            default:
+                posts.sort((a, b) -> b.getTimestamp().compareTo(a.getTimestamp()));
+                break;
+        }
+        return posts;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Post> getPost(@PathVariable Long id) {
+        Post post = postService.getPostById(id);
+        if (post == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(post);
+    }
+
+    @PutMapping("/{id}/view")
+    public ResponseEntity<Post> incrementViewCount(@PathVariable Long id) {
+        Post post = postService.getPostById(id);
+        if (post == null) {
+            return ResponseEntity.notFound().build();
+        }
+        post.setViews(post.getViews() + 1);
+        return ResponseEntity.ok(postService.savePost(post));
     }
 
     @GetMapping("/pending")

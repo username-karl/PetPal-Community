@@ -67,9 +67,20 @@ export const api = {
         });
         return response.ok;
     },
-    getPosts: async (userId) => {
-        const url = userId ? `${API_URL}/posts?userId=${userId}` : `${API_URL}/posts`;
+    getPosts: async (userId, sort = 'newest') => {
+        let url = `${API_URL}/posts?sort=${sort}`;
+        if (userId) url += `&userId=${userId}`;
         const response = await fetch(url);
+        return handleResponse(response);
+    },
+    getPost: async (id) => {
+        const response = await fetch(`${API_URL}/posts/${id}`);
+        return handleResponse(response);
+    },
+    viewPost: async (id) => {
+        const response = await fetch(`${API_URL}/posts/${id}/view`, {
+            method: 'PUT',
+        });
         return handleResponse(response);
     },
     getPendingPosts: async () => {
