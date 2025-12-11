@@ -93,6 +93,7 @@ const App = () => {
                 userName={user?.name}
                 userRole={user?.role}
                 userAvatar={user?.avatarUrl}
+                userId={user?.id}
                 onLogout={handleLogout}
               >
                 <Routes>

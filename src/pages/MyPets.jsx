@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Dog, Cat, Plus, Loader2, Edit2, CheckCircle2 } from 'lucide-react';
+import { Dog, Plus, Loader2, Edit2, CheckCircle2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useData } from '../context/DataContext';
 import EditPetModal from '../components/EditPetModal';
+import { getPetIcon } from '../components/Shared';
 
 const MyPets = ({ onAddPetClick }) => {
   const navigate = useNavigate();
@@ -98,7 +99,7 @@ const MyPets = ({ onAddPetClick }) => {
               <div className="p-5">
                 <div className="flex justify-between items-start mb-1">
                   <h3 className="text-lg font-semibold text-slate-900">{pet.name}</h3>
-                  {pet.type === 'Cat' ? <Cat className="w-4 h-4 text-slate-400" /> : <Dog className="w-4 h-4 text-slate-400" />}
+                  {getPetIcon(pet.type)}
                 </div>
                 <p className="text-sm text-slate-500 mb-4">{pet.breed || pet.type}</p>
 

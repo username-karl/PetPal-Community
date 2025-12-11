@@ -4,6 +4,7 @@ import com.petpal.community.model.Post;
 import com.petpal.community.model.PostLike;
 import com.petpal.community.model.User;
 import com.petpal.community.repository.PostLikeRepository;
+import com.petpal.community.service.NotificationService;
 import com.petpal.community.service.PostService;
 import com.petpal.community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class PostController {
 
     @Autowired
     private PostLikeRepository postLikeRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @GetMapping
     public List<Post> getAllPosts(@RequestParam(required = false) Long userId,
@@ -140,7 +144,16 @@ public class PostController {
 
     @PutMapping("/{id}/approve")
     public ResponseEntity<Post> approvePost(@PathVariable Long id) {
-        return ResponseEntity.ok(postService.approvePost(id));
+        Post post = postService.approvePost(id);
+        // Create notification for post author
+        if (post.getAuthor() != null) {
+            notificationService.createNotification(
+                    post.getAuthor().getId(),
+                    "Your post '" + post.getTitle() + "' has been approved!",
+                    "POST_APPROVED",
+                    "/community");
+        }
+        return ResponseEntity.ok(post);
     }
 
     @PutMapping("/{id}/reject")
@@ -182,7 +195,17 @@ public class PostController {
             comment.setAuthor(user);
             comment.setPost(post);
             post.getComments().add(comment);
-            return ResponseEntity.ok(postService.savePost(post));
+            Post savedPost = postService.savePost(post);
+
+            // Create notification for post author (if commenter is not the author)
+            if (post.getAuthor() != null && !post.getAuthor().getId().equals(userId)) {
+                notificationService.createNotification(
+                        post.getAuthor().getId(),
+                        user.getName() + " commented on your post '" + post.getTitle() + "'",
+                        "NEW_COMMENT",
+                        "/community");
+            }
+            return ResponseEntity.ok(savedPost);
         }).orElse(ResponseEntity.badRequest().build());
     }
 }

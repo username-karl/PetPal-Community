@@ -18,10 +18,12 @@ import {
   Eye,
   ChevronDown,
   MessageSquare,
-  AlertTriangle
+  AlertTriangle,
+  Flag
 } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import PostDetailModal from '../components/PostDetailModal';
+import ReportModal from '../components/ReportModal';
 
 const CATEGORIES = ['General', 'Advice', 'Question', 'Adoption', 'Health', 'Tips'];
 
@@ -58,6 +60,9 @@ const Community = ({ user, onToggleRole }) => {
 
   // Delete confirmation state
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+
+  // Report state
+  const [reportingPost, setReportingPost] = useState(null);
 
   // Filter and sort posts
   const filteredPosts = useMemo(() => {
@@ -447,6 +452,18 @@ const Community = ({ user, onToggleRole }) => {
                               Delete
                             </button>
                           )}
+                          {!isAuthor(post) && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setReportingPost(post);
+                              }}
+                              className="flex items-center gap-1 hover:text-orange-500 transition"
+                            >
+                              <Flag className="w-3.5 h-3.5" />
+                              Report
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
@@ -580,6 +597,16 @@ const Community = ({ user, onToggleRole }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Report Modal */}
+      {reportingPost && (
+        <ReportModal
+          post={reportingPost}
+          userId={user?.id}
+          onClose={() => setReportingPost(null)}
+          onReported={() => setReportingPost(null)}
+        />
       )}
     </div>
   );

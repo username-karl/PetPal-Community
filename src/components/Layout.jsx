@@ -1,8 +1,8 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Bell } from 'lucide-react';
 import Sidebar from './Sidebar';
+import NotificationBell from './NotificationBell';
 
 const Layout = ({
   children,
@@ -10,6 +10,7 @@ const Layout = ({
   userName,
   userRole,
   userAvatar,
+  userId,
   onLogout
 }) => {
   const location = useLocation();
@@ -49,11 +50,7 @@ const Layout = ({
             <h2 className="text-sm font-semibold text-slate-900">{getPageTitle()}</h2>
           </div>
           <div className="flex items-center gap-4">
-
-            <button className="relative text-slate-400 hover:text-slate-900 transition-colors p-1">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full border border-white"></span>
-            </button>
+            <NotificationBell userId={userId} />
           </div>
         </div>
 

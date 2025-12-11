@@ -58,6 +58,7 @@ const Dashboard = ({ user }) => {
     const [selectedReminder, setSelectedReminder] = useState(null);
     const [showAddReminder, setShowAddReminder] = useState(false);
     const [tipIndex, setTipIndex] = useState(0);
+    const [tipProgress, setTipProgress] = useState(0);
 
     // Generate context-aware tips based on pet data and reminders
     const smartTips = useMemo(() => {
@@ -154,20 +155,28 @@ const Dashboard = ({ user }) => {
     const currentTip = smartTips[tipIndex % smartTips.length] || smartTips[0];
     const TipIcon = currentTip?.icon || Lightbulb;
 
-    // Auto-rotate tips every 10 seconds
+    // Auto-rotate tips every 10 seconds with progress animation
     useEffect(() => {
         if (smartTips.length <= 1) return;
 
-        const timer = setInterval(() => {
-            setTipIndex((prev) => (prev + 1) % smartTips.length);
-        }, 10000); // 10 seconds
+        // Progress animation - updates every 100ms for smooth animation
+        const progressInterval = setInterval(() => {
+            setTipProgress((prev) => {
+                if (prev >= 100) {
+                    setTipIndex((prevIndex) => (prevIndex + 1) % smartTips.length);
+                    return 0;
+                }
+                return prev + 1; // 1% every 100ms = 10 seconds total
+            });
+        }, 100);
 
-        return () => clearInterval(timer);
+        return () => clearInterval(progressInterval);
     }, [smartTips.length]);
 
     // Manual refresh to next tip
     const refreshTip = () => {
         setTipIndex((prev) => (prev + 1) % smartTips.length);
+        setTipProgress(0); // Reset progress on manual refresh
     };
 
     // High priority types
@@ -296,10 +305,35 @@ const Dashboard = ({ user }) => {
                                         </p>
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-between mt-3 pt-2 border-t border-white/10">
-                                    <span className="text-[10px] text-slate-400">
-                                        Tip {tipIndex + 1} of {smartTips.length}
-                                    </span>
+                                {/* Progress bar */}
+                                <div className="mt-3 w-full bg-white/10 h-1 rounded-full overflow-hidden">
+                                    <div
+                                        className={`h-full rounded-full transition-all duration-100 ease-linear ${currentTip?.priority ? 'bg-red-400' : 'bg-cyan-400'}`}
+                                        style={{ width: `${tipProgress}%` }}
+                                    />
+                                </div>
+                                <div className="flex items-center justify-between mt-2">
+                                    {/* Dot indicators */}
+                                    <div className="flex items-center gap-1.5">
+                                        {smartTips.slice(0, Math.min(smartTips.length, 8)).map((_, index) => (
+                                            <button
+                                                key={index}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setTipIndex(index);
+                                                    setTipProgress(0);
+                                                }}
+                                                className={`w-2 h-2 rounded-full transition-all duration-300 ${index === (tipIndex % smartTips.length)
+                                                    ? (currentTip?.priority ? 'bg-red-400 scale-125' : 'bg-cyan-400 scale-125')
+                                                    : 'bg-white/30 hover:bg-white/50'
+                                                    }`}
+                                                title={`Tip ${index + 1}`}
+                                            />
+                                        ))}
+                                        {smartTips.length > 8 && (
+                                            <span className="text-[10px] text-slate-400 ml-1">+{smartTips.length - 8}</span>
+                                        )}
+                                    </div>
                                     <button
                                         onClick={refreshTip}
                                         className="text-[10px] text-slate-400 hover:text-slate-200 flex items-center gap-1 transition-colors"
@@ -471,39 +505,43 @@ const Dashboard = ({ user }) => {
                                 </button>
                             </div>
                             <div className="mt-6 space-y-3">
-                                <div>
-                                    <div className="flex justify-between text-xs font-medium text-slate-500 mb-1.5">
-                                        <span>Task Completion (Today)</span>
-                                        <span className="text-slate-900">
-                                            {(() => {
-                                                const petReminders = reminders.filter(r => r.petId === activePet.id && isToday(new Date(r.date)));
-                                                const completed = petReminders.filter(r => r.completed).length;
-                                                const total = petReminders.length;
-                                                return total > 0 ? Math.round((completed / total) * 100) : 0;
-                                            })()}%
-                                        </span>
-                                    </div>
-                                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                                        <div
-                                            className="bg-slate-900 h-full rounded-full transition-all duration-500"
-                                            style={{
-                                                width: `${(() => {
-                                                    const petReminders = reminders.filter(r => r.petId === activePet.id && isToday(new Date(r.date)));
-                                                    const completed = petReminders.filter(r => r.completed).length;
-                                                    const total = petReminders.length;
-                                                    return total > 0 ? (completed / total) * 100 : 0;
-                                                })()}%`
-                                            }}
-                                        ></div>
-                                    </div>
-                                    <p className="text-xs text-slate-400 mt-2 text-center">
-                                        {(() => {
-                                            const petReminders = reminders.filter(r => r.petId === activePet.id && isToday(new Date(r.date)));
-                                            const completed = petReminders.filter(r => r.completed).length;
-                                            return `${completed}/${petReminders.length} tasks done today`;
-                                        })()}
-                                    </p>
-                                </div>
+                                {(() => {
+                                    const petReminders = reminders.filter(r => r.petId === activePet.id && isToday(new Date(r.date)));
+                                    const completed = petReminders.filter(r => r.completed).length;
+                                    const total = petReminders.length;
+
+                                    if (total === 0) {
+                                        return (
+                                            <div className="text-center py-4">
+                                                <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                                    <CheckCircle2 className="w-5 h-5 text-slate-400" />
+                                                </div>
+                                                <p className="text-sm text-slate-500">No tasks for today</p>
+                                                <p className="text-xs text-slate-400 mt-1">Enjoy your day with {activePet.name}!</p>
+                                            </div>
+                                        );
+                                    }
+
+                                    const percentage = Math.round((completed / total) * 100);
+
+                                    return (
+                                        <div>
+                                            <div className="flex justify-between text-xs font-medium text-slate-500 mb-1.5">
+                                                <span>Task Completion (Today)</span>
+                                                <span className="text-slate-900">{percentage}%</span>
+                                            </div>
+                                            <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                                <div
+                                                    className="bg-slate-900 h-full rounded-full transition-all duration-500"
+                                                    style={{ width: `${percentage}%` }}
+                                                ></div>
+                                            </div>
+                                            <p className="text-xs text-slate-400 mt-2 text-center">
+                                                {completed}/{total} tasks done today
+                                            </p>
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </div>
                     ) : (

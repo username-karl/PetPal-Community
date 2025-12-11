@@ -36,6 +36,7 @@ import {
 } from 'date-fns';
 import AddReminderModal from '../components/AddReminderModal';
 import ReminderDetailsModal from '../components/ReminderDetailsModal';
+import { getPetIcon } from '../components/Shared';
 
 // Helper function to get due date info
 const getDueDateInfo = (dateStr, completed) => {
@@ -472,15 +473,15 @@ const Reminders = ({ user }) => {
                                                                 </h5>
                                                                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                                                                     <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${reminder.type === 'Medical' ? 'bg-red-50 text-red-600' :
-                                                                            reminder.type === 'Vaccination' ? 'bg-green-50 text-green-600' :
-                                                                                reminder.type === 'Grooming' ? 'bg-purple-50 text-purple-600' :
-                                                                                    'bg-blue-50 text-blue-600'
+                                                                        reminder.type === 'Vaccination' ? 'bg-green-50 text-green-600' :
+                                                                            reminder.type === 'Grooming' ? 'bg-purple-50 text-purple-600' :
+                                                                                'bg-blue-50 text-blue-600'
                                                                         }`}>
                                                                         {reminder.type}
                                                                     </span>
                                                                     {pet && (
                                                                         <span className="text-[10px] text-slate-400 flex items-center gap-1">
-                                                                            <PawPrint className="w-3 h-3" /> {pet.name}
+                                                                            {getPetIcon(pet.type, "w-3 h-3")} {pet.name}
                                                                         </span>
                                                                     )}
                                                                 </div>

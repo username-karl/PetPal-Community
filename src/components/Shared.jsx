@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Dog, Cat, Bird, PawPrint } from 'lucide-react';
 import { PetType } from '../constants';
 
 export const StatusBadge = ({ type }) => {
@@ -20,6 +21,23 @@ export const getPetEmoji = (type) => {
     case PetType.CAT: return '🐈';
     case PetType.BIRD: return '🐦';
     default: return '🐾';
+  }
+};
+
+// Returns lucide icon component for pet type
+export const getPetIcon = (type, className = "w-4 h-4 text-slate-400") => {
+  switch (type) {
+    case PetType.DOG:
+    case 'Dog':
+      return <Dog className={className} />;
+    case PetType.CAT:
+    case 'Cat':
+      return <Cat className={className} />;
+    case PetType.BIRD:
+    case 'Bird':
+      return <Bird className={className} />;
+    default:
+      return <PawPrint className={className} />;
   }
 };
 

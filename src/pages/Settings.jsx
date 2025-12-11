@@ -297,8 +297,8 @@ const Settings = ({ user }) => {
                                     onClick={handleDeleteAccount}
                                     disabled={deleteConfirmText !== 'DELETE' || isDeleting}
                                     className={`flex-1 px-4 py-3 font-medium rounded-xl transition flex items-center justify-center gap-2 ${deleteConfirmText === 'DELETE' && !isDeleting
-                                            ? 'bg-red-600 text-white hover:bg-red-700'
-                                            : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                        ? 'bg-red-600 text-white hover:bg-red-700'
+                                        : 'bg-slate-100 text-slate-400 cursor-not-allowed'
                                         }`}
                                 >
                                     {isDeleting ? (

@@ -20,6 +20,7 @@ import {
 import { useData } from '../context/DataContext';
 import { useAuth } from '../AuthContext';
 import { isToday, isThisWeek, isThisMonth, format, startOfWeek, differenceInDays } from 'date-fns';
+import { getPetIcon } from '../components/Shared';
 
 const Profile = ({ user, onUpdateUser }) => {
     const navigate = useNavigate();
@@ -355,7 +356,8 @@ const Profile = ({ user, onUpdateUser }) => {
                                             <p className="font-semibold text-sm text-slate-900">{pet.name}</p>
                                             <p className="text-xs text-slate-500">{pet.breed || pet.type} • {pet.age} yrs</p>
                                         </div>
-                                        <div className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">
+                                        <div className="flex items-center gap-1 text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">
+                                            {getPetIcon(pet.type, "w-3.5 h-3.5")}
                                             {pet.type}
                                         </div>
                                     </div>

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { format, isToday, isTomorrow, isPast, differenceInDays, startOfDay } from 'date-fns';
 import { useData } from '../context/DataContext';
+import { getPetIcon } from './Shared';
 
 // Helper function to get due date info
 const getDueDateInfo = (dateStr, completed = false) => {
@@ -145,7 +146,7 @@ const ReminderDetailsModal = ({ reminder, onClose }) => {
                                     <p className="text-xs text-slate-400 uppercase font-medium tracking-wider">Pet</p>
                                     <p className="text-slate-900 font-semibold group-hover:text-blue-600 transition-colors flex items-center gap-1">
                                         {pet.name}
-                                        <span className="text-slate-400 font-normal">({pet.type})</span>
+                                        <span className="text-slate-400 font-normal flex items-center gap-1">({getPetIcon(pet.type, "w-3.5 h-3.5")} {pet.type})</span>
                                     </p>
                                 </div>
                                 <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-blue-500 transition-colors" />

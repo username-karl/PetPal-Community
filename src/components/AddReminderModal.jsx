@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, ChevronRight, Calendar, Clock, RefreshCw, Bell, PawPrint } from 'lucide-react';
 import { ReminderType } from '../constants';
 import { useData } from '../context/DataContext';
+import { getPetIcon } from './Shared';
 
 const AddReminderModal = ({ onClose }) => {
     const { pets, addReminder } = useData();
@@ -111,7 +112,7 @@ const AddReminderModal = ({ onClose }) => {
                                         : 'border-slate-200 bg-white hover:border-slate-300 text-slate-700'
                                         }`}
                                 >
-                                    <PawPrint className="w-4 h-4" />
+                                    {getPetIcon(pet.type, "w-4 h-4")}
                                     <span className="font-medium text-sm">{pet.name}</span>
                                 </button>
                             ))}
@@ -220,7 +221,7 @@ const AddReminderModal = ({ onClose }) => {
                             </div>
                             {selectedPet && (
                                 <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-200 text-xs text-slate-500">
-                                    <PawPrint className="w-3.5 h-3.5" />
+                                    {getPetIcon(selectedPet.type, "w-3.5 h-3.5")}
                                     <span>{selectedPet.name}</span>
                                 </div>
                             )}

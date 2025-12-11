@@ -163,5 +163,45 @@ export const api = {
             method: 'DELETE',
         });
         return response.ok;
+    },
+    // Reports
+    getReports: async (status = 'PENDING') => {
+        const response = await fetch(`${API_URL}/reports?status=${status}`);
+        return handleResponse(response);
+    },
+    createReport: async (postId, reason, description, userId) => {
+        const response = await fetch(`${API_URL}/reports?userId=${userId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ postId, reason, description }),
+        });
+        return handleResponse(response);
+    },
+    reviewReport: async (id, reviewerId, action) => {
+        const response = await fetch(`${API_URL}/reports/${id}/review?reviewerId=${reviewerId}&action=${action}`, {
+            method: 'PUT',
+        });
+        return handleResponse(response);
+    },
+    // Notifications
+    getNotifications: async (userId) => {
+        const response = await fetch(`${API_URL}/notifications?userId=${userId}`);
+        return handleResponse(response);
+    },
+    getUnreadCount: async (userId) => {
+        const response = await fetch(`${API_URL}/notifications/unread-count?userId=${userId}`);
+        return handleResponse(response);
+    },
+    markNotificationAsRead: async (notificationId) => {
+        const response = await fetch(`${API_URL}/notifications/${notificationId}/read`, {
+            method: 'PUT',
+        });
+        return handleResponse(response);
+    },
+    markAllNotificationsAsRead: async (userId) => {
+        const response = await fetch(`${API_URL}/notifications/mark-all-read?userId=${userId}`, {
+            method: 'PUT',
+        });
+        return response.ok;
     }
 };

@@ -41,6 +41,10 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<Comment> comments = new java.util.ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private java.util.List<Report> reports = new java.util.ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         timestamp = LocalDateTime.now();
